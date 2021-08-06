@@ -9,6 +9,7 @@ import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { DatabaseConfigModule } from './database-config.module';
 import { ConfigModule } from '@nestjs/config';
 import { AnswerModule } from './answer/answer.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AnswerModule } from './answer/answer.module';
     }),
     DatabaseConfigModule,
     AnswerModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
