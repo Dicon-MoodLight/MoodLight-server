@@ -10,6 +10,7 @@ import { DatabaseConfigModule } from './database-config.module';
 import { ConfigModule } from '@nestjs/config';
 import { AnswerModule } from './answer/answer.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     DatabaseConfigModule,
     AnswerModule,
     ScheduleModule.forRoot(),
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from './user/entity/user.entity';
 import { Answer } from './answer/entity/answer.entity';
 import { Question } from './question/entity/question.entity';
+import { Comment } from './comment/entity/comment.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { Question } from './question/entity/question.entity';
         password: config.get<string>('DB_PASSWORD'),
         host: config.get<string>('DB_HOST'),
         autoLoadEntities: true,
-        entities: [User, Answer, Question],
+        entities: [User, Answer, Question, Comment],
         synchronize: true,
         type: 'mysql',
         charset: 'utf8_general_ci',

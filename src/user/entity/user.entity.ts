@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Answer } from '../../answer/entity/answer.entity';
+import { Comment } from '../../comment/entity/comment.entity';
 
 @Entity('users')
 export class User {
@@ -26,6 +27,11 @@ export class User {
     cascade: true,
   })
   answers: Answer[];
+
+  @OneToMany((type) => Comment, (comment: Comment) => comment.user, {
+    cascade: true,
+  })
+  comments: Comment[];
 
   @Column({ type: 'boolean', nullable: false, default: false })
   admin: boolean;
