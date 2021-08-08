@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import { IStatusResponse } from '../types/response';
-import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../util/response';
+import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { throwHttpException } from '../util/error';
 
 @Injectable()
 export class UserService {
@@ -17,22 +17,24 @@ export class UserService {
     return await this.userRepository.findOne({ id });
   }
 
-  async findUserByEmail(email: string): Promise<User> {
-    return await this.userRepository.findOne({ email });
+  async findUserByEmail(
+    email: string,
+    confirmed: boolean = null,
+  ): Promise<User> {
+    return await this.userRepository.findOne({
+      email,
+      ...(confirmed !== null ? { confirmed } : {}),
+    });
   }
 
-  async findUserByNickname(nickname: string): Promise<User> {
-    return await this.userRepository.findOne({ nickname });
-  }
-
-  async createUser(createUserDto: CreateUserDto): Promise<IStatusResponse> {
-    try {
-      const newUser = await this.userRepository.create(createUserDto);
-      await this.userRepository.save(newUser);
-    } catch (err) {
-      return { ...FAILURE_RESPONSE, message: err };
-    }
-    return SUCCESS_RESPONSE;
+  async findUserByNickname(
+    nickname: string,
+    confirmed: boolean = null,
+  ): Promise<User> {
+    return await this.userRepository.findOne({
+      nickname,
+      ...(confirmed !== null ? { confirmed } : {}),
+    });
   }
 
   async updateUser({
@@ -40,18 +42,19 @@ export class UserService {
     ...updateUserDto
   }: UpdateUserDto): Promise<IStatusResponse> {
     try {
-      const user = await this.findUserById(id);
-      await this.userRepository.save({ ...user, ...updateUserDto });
+      await this.userRepository.update(id, updateUserDto);
     } catch (err) {
-      return { ...FAILURE_RESPONSE, message: err };
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
+    return SUCCESS_RESPONSE;
   }
 
   async deleteUser(id): Promise<IStatusResponse> {
     try {
       await this.userRepository.delete({ id });
     } catch (err) {
-      return { ...FAILURE_RESPONSE, message: err };
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
+    return SUCCESS_RESPONSE;
   }
 }

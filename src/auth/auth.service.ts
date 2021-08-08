@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +8,10 @@ import { LoginDto } from './dto/login.dto';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
+import { IStatusResponse } from '../types/response';
+import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
+import { throwHttpException } from '../util/error';
+import { JoinDto } from './dto/join.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +21,39 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  async join({
+    email,
+    password: plain,
+    nickname,
+  }: JoinDto): Promise<IStatusResponse> {
+    try {
+      const emailHasUser = await this.userService.findUserByEmail(email);
+      const nicknameIsExist = !!(await this.userService.findUserByNickname(
+        nickname,
+        true,
+      ));
+      if (emailHasUser?.confirmed || nicknameIsExist) {
+        throwHttpException(
+          { ...FAILURE_RESPONSE, message: 'User already exists.' },
+          HttpStatus.CONFLICT,
+        );
+      }
+      const confirmCode = this.createConfirmCode();
+      const password = await this.encryptPassword(plain);
+      const user = { email, nickname, password, confirmCode };
+      if (emailHasUser) {
+        await this.userRepository.update(emailHasUser.id, user);
+      } else {
+        const newUser = await this.userRepository.create(user);
+        await this.userRepository.save(newUser);
+      }
+      await this.sendConfirmEmail(email, confirmCode);
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
+  }
 
   async login({ email, password: plain }: LoginDto): Promise<User> {
     const { password } = await this.userRepository.findOne({
@@ -49,7 +86,18 @@ export class AuthService {
     },
   } as any);
 
-  private async sendVerificationEmail(email, confirmCode): Promise<void> {
+  private createConfirmCode(): string {
+    const CHARS = '0123456789';
+    const VERIFY_NUMBER_LENGTH = 6;
+    let verifyNumber = '';
+    for (let i = 0; i < VERIFY_NUMBER_LENGTH; i++) {
+      const n = Math.floor(Math.random() * CHARS.length);
+      verifyNumber += CHARS.substring(n, n + 1);
+    }
+    return verifyNumber;
+  }
+
+  private async sendConfirmEmail(email, confirmCode): Promise<void> {
     await this.transporter.sendMail({
       from: this.configService.get<string>('EMAIL_ADDRESS'),
       to: email,

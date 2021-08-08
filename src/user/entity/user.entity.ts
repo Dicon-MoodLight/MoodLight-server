@@ -36,6 +36,9 @@ export class User {
   @Column({ type: 'boolean', nullable: false, default: false })
   admin: boolean;
 
+  @Column({ length: 6, nullable: true, select: false })
+  confirmCode: string;
+
   @Column({ type: 'boolean', nullable: false, default: false, select: false })
   confirmed: boolean;
 
