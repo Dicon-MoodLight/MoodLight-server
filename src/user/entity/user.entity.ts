@@ -23,7 +23,7 @@ export class User {
   @Column({ length: 24, nullable: false, select: false })
   password: string;
 
-  @OneToMany((type) => Answer, (answer: Answer) => answer.user, {
+  @OneToMany(() => Answer, (answer: Answer) => answer.user, {
     cascade: true,
   })
   answers: Answer[];

@@ -11,7 +11,7 @@ async function bootstrap() {
   });
   const options = new DocumentBuilder()
     .setTitle('Mood light')
-    .setDescription('Mood Light 서버 API 문서입니다.')
+    .setDescription('Mood light 서버 API 문서입니다.')
     .setVersion('1.0.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);

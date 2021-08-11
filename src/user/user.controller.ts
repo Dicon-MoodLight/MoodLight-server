@@ -11,11 +11,6 @@ import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  hello(): string {
-    return 'Hello, User!';
-  }
-
   @ApiOperation({ summary: '사용자 이메일 or 닉네임 가입 여부 확인' })
   @Get('exist')
   async getUserIsExist(

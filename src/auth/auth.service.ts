@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { LoginDto } from './dto/login.dto';
@@ -12,11 +12,12 @@ import { IStatusResponse } from '../types/response';
 import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
 import { throwHttpException } from '../util/error';
 import { JoinDto } from './dto/join.dto';
+import { ConfirmDto } from './dto/confirm.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -26,6 +27,7 @@ export class AuthService {
     email,
     password: plain,
     nickname,
+    ...joinDto
   }: JoinDto): Promise<IStatusResponse> {
     try {
       const emailHasUser = await this.userService.findUserByEmail(email);
@@ -41,7 +43,14 @@ export class AuthService {
       }
       const confirmCode = this.createConfirmCode();
       const password = await this.encryptPassword(plain);
-      const user = { email, nickname, password, confirmCode };
+      const user = {
+        email,
+        nickname,
+        password,
+        confirmCode,
+        admin:
+          joinDto?.adminKey === this.configService.get<string>('ADMIN_KEY'),
+      };
       if (emailHasUser) {
         await this.userRepository.update(emailHasUser.id, user);
       } else {
@@ -49,6 +58,28 @@ export class AuthService {
         await this.userRepository.save(newUser);
       }
       await this.sendConfirmEmail(email, confirmCode);
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async confirm(confirmDto: ConfirmDto): Promise<IStatusResponse> {
+    try {
+      const user = await this.userRepository.findOne({
+        ...confirmDto,
+        confirmed: false,
+      });
+      if (!user) {
+        throwHttpException(
+          {
+            ...FAILURE_RESPONSE,
+            message: 'User does not exists.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.userRepository.update(user.id, { confirmed: true });
     } catch (err) {
       throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
