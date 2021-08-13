@@ -53,6 +53,10 @@ export class QuestionService {
     }, 1000);
   }
 
+  async findQuestionById(id: string): Promise<Question> {
+    return await this.questionRepository.findOne({ id });
+  }
+
   async findQuestion({
     type,
     activatedDate,

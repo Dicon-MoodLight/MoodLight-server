@@ -21,30 +21,30 @@ export class Answer {
   contents: string;
 
   @Column({ type: 'boolean', nullable: false, default: true })
-  allowComment: boolean;
+  allow_comment: boolean;
 
   @Column({ type: 'boolean', nullable: false, default: false })
   private: boolean;
 
-  @ManyToOne((type) => User, (user: User) => user.answers, {
+  @ManyToOne(() => User, (user: User) => user.answers, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne((type) => Question, (question: Question) => question.answers, {
+  @ManyToOne(() => Question, (question: Question) => question.answers, {
     onDelete: 'CASCADE',
   })
   question: Question;
 
-  @OneToMany((type) => Comment, (comment: Comment) => comment.answer, {
+  @OneToMany(() => Comment, (comment: Comment) => comment.answer, {
     cascade: true,
   })
   comments: Comment[];
 
-  @CreateDateColumn({ name: 'createdDate', nullable: false })
-  createdDate: Date;
+  @CreateDateColumn({ nullable: false })
+  created_date: Date;
 
-  @UpdateDateColumn({ name: 'updatedDate', nullable: false, select: false })
-  updatedDate: Date;
+  @UpdateDateColumn({ nullable: false, select: false })
+  updated_date: Date;
 }

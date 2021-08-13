@@ -28,13 +28,13 @@ export class User {
   })
   answers: Answer[];
 
-  @OneToMany((type) => Comment, (comment: Comment) => comment.user, {
+  @OneToMany(() => Comment, (comment: Comment) => comment.user, {
     cascade: true,
   })
   comments: Comment[];
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  admin: boolean;
+  is_admin: boolean;
 
   @Column({ length: 6, nullable: true, select: false })
   confirmCode: string;
@@ -42,9 +42,9 @@ export class User {
   @Column({ type: 'boolean', nullable: false, default: false, select: false })
   confirmed: boolean;
 
-  @CreateDateColumn({ name: 'createdDate', nullable: false })
-  createdDate: Date;
+  @CreateDateColumn({ nullable: false })
+  created_date: Date;
 
-  @UpdateDateColumn({ name: 'updatedDate', nullable: false, select: false })
-  updatedDate: Date;
+  @UpdateDateColumn({ nullable: false, select: false })
+  updated_date: Date;
 }

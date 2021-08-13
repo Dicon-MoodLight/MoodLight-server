@@ -27,7 +27,7 @@ export class AuthService {
     email,
     password: plain,
     nickname,
-    ...joinDto
+    adminKey,
   }: JoinDto): Promise<IStatusResponse> {
     try {
       const emailHasUser = await this.userService.findUserByEmail(email);
@@ -41,15 +41,14 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-      const confirmCode = this.createConfirmCode();
-      const password = await this.encryptPassword(plain);
+      const confirmCode = AuthService.createConfirmCode();
+      const password = await AuthService.encryptPassword(plain);
       const user = {
         email,
         nickname,
         password,
         confirmCode,
-        admin:
-          joinDto?.adminKey === this.configService.get<string>('ADMIN_KEY'),
+        is_admin: adminKey === this.configService.get<string>('ADMIN_KEY'),
       };
       if (emailHasUser) {
         await this.userRepository.update(emailHasUser.id, user);
@@ -102,7 +101,7 @@ export class AuthService {
     return this.jwtService.sign({ id, email });
   }
 
-  private async encryptPassword(plain: string): Promise<string> {
+  private static async encryptPassword(plain: string): Promise<string> {
     const salt = await bcrypt.genSalt(12);
     return await bcrypt.hash(plain, salt);
   }
@@ -117,7 +116,7 @@ export class AuthService {
     },
   } as any);
 
-  private createConfirmCode(): string {
+  private static createConfirmCode(): string {
     const CHARS = '0123456789';
     const VERIFY_NUMBER_LENGTH = 6;
     let verifyNumber = '';
