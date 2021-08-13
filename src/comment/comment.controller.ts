@@ -10,7 +10,7 @@ export class CommentController {
 
   @ApiOperation({ summary: '댓글 리스트 가져오기 (최신순)' })
   @Get(':id')
-  async findComments(@Param() id: string): Promise<Comment[]> {
+  async findComments(@Param('id') id: string): Promise<Comment[]> {
     return await this.commentService.findCommentsByAnswerId(id);
   }
 }
