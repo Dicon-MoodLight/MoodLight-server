@@ -1,0 +1,1 @@
+type IOrder = 'latest' | 'oldest';

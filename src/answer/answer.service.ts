@@ -20,10 +20,16 @@ export class AnswerService {
     return await this.answerRepository.findOne({ id });
   }
 
-  async findAnswersByQuestionId(questionId: string): Promise<Answer[]> {
+  async findAnswersByQuestionId(
+    questionId: string,
+    skip: number,
+    take: number,
+  ): Promise<Answer[]> {
     return await this.answerRepository.find({
       where: { question: questionId, private: false },
       order: { id: 'DESC' },
+      skip,
+      take,
     });
   }
 

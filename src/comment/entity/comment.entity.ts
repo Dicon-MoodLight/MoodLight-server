@@ -28,8 +28,8 @@ export class Comment {
   user: User;
 
   @CreateDateColumn({ nullable: false, select: false })
-  createdDate: Date;
+  created_date: Date;
 
   @UpdateDateColumn({ nullable: false, select: false })
-  updatedDate: Date;
+  updated_date: Date;
 }

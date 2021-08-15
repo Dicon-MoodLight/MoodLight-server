@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Answer } from '../../answer/entity/answer.entity';
-import { IType } from '../types/question';
 
 @Entity('questions')
 export class Question {
@@ -17,9 +16,6 @@ export class Question {
   @Column({ type: 'boolean', nullable: false, default: true })
   selected: boolean;
 
-  @Column({ length: 10, nullable: false })
-  type: IType;
-
   @Column({ length: 150, nullable: false })
   contents: string;
 
@@ -27,7 +23,7 @@ export class Question {
   activated: boolean;
 
   @Column({ length: '8', nullable: true, select: false })
-  activatedDate: string;
+  activated_date: string;
 
   @OneToMany(() => Answer, (answer: Answer) => answer.question, {
     cascade: true,
@@ -35,8 +31,8 @@ export class Question {
   answers: Answer[];
 
   @CreateDateColumn({ name: 'createdDate', nullable: false, select: false })
-  createdDate: Date;
+  created_date: Date;
 
   @UpdateDateColumn({ name: 'updatedDate', nullable: false, select: false })
-  updatedDate: Date;
+  updated_date: Date;
 }

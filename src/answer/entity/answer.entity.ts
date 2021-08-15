@@ -11,17 +11,18 @@ import {
 import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';
 import { Comment } from '../../comment/entity/comment.entity';
+import { IType } from '../../question/types/question';
 
 @Entity('answers')
 export class Answer {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
+  @Column({ length: 10, nullable: false })
+  type: IType;
+
   @Column({ type: 'text', nullable: false })
   contents: string;
-
-  @Column({ type: 'boolean', nullable: false, default: true })
-  allow_comment: boolean;
 
   @Column({ type: 'boolean', nullable: false, default: false })
   private: boolean;

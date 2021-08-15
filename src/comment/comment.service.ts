@@ -30,7 +30,7 @@ export class CommentService {
   }: CreateCommentDto): Promise<IStatusResponse> {
     try {
       const answer = await this.answerService.findAnswerById(answerId);
-      if (answer.private || answer.allow_comment) {
+      if (answer.private) {
         throwHttpException(
           { ...FAILURE_RESPONSE, message: 'Answer is private.' },
           HttpStatus.CONFLICT,

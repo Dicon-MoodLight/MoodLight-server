@@ -26,7 +26,7 @@ export class CommentController {
     @Req() req: any,
     @Param('id') answerId: string,
   ): Promise<Comment[]> {
-    const userId = req.user?.id;
+    const { id: userId } = req.user;
     return await this.commentService.findCommentsByAnswerId(answerId, userId);
   }
 
@@ -37,7 +37,7 @@ export class CommentController {
     @Req() req: any,
     @Body() createCommentDto: CreateCommentDto,
   ): Promise<IStatusResponse> {
-    const userId = req.user?.id;
+    const { id: userId } = req.user;
     return await this.commentService.createComment({
       ...createCommentDto,
       userId,

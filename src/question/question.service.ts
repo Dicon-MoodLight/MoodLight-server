@@ -4,14 +4,6 @@ import { Question } from './entity/question.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { Cron } from '@nestjs/schedule';
 import moment from 'moment';
-import { IType } from './types/question';
-
-interface IFindQuestion {
-  type: IType;
-  activatedDate: string;
-}
-
-const TYPE_ARRAY: IType[] = ['sad', 'happy', 'angry'];
 
 @Injectable()
 export class QuestionService {
@@ -20,22 +12,19 @@ export class QuestionService {
     private questionRepository: Repository<Question>,
   ) {}
 
-  private activateQuestionTemplate(
-    type,
-    activated,
-  ): () => Promise<UpdateResult> {
+  private activateQuestionTemplate(activated): () => Promise<UpdateResult> {
     return async () => {
       const id = (
         await this.questionRepository.findOne({
-          where: { type, activated },
+          where: { activated },
           select: ['id'],
           ...(activated ? { order: { id: 'DESC' } } : {}),
         })
       )?.id;
-      const activatedDate = moment().format('YYYY-MM-DD');
+      const activated_date = moment().format('YYYY-MM-DD');
       return await this.questionRepository.update(id, {
         activated: !activated,
-        activatedDate,
+        activated_date,
       });
     };
   }
@@ -43,13 +32,10 @@ export class QuestionService {
   @Cron('000 * * *')
   async updateTodayQuestion() {
     setTimeout(async () => {
-      const promises = TYPE_ARRAY.map(async (type) => {
-        await Promise.all([
-          this.activateQuestionTemplate(type, true),
-          this.activateQuestionTemplate(type, false),
-        ]);
-      });
-      await Promise.all(promises);
+      await Promise.all([
+        this.activateQuestionTemplate(true),
+        this.activateQuestionTemplate(false),
+      ]);
     }, 1000);
   }
 
@@ -57,13 +43,9 @@ export class QuestionService {
     return await this.questionRepository.findOne({ id });
   }
 
-  async findQuestion({
-    type,
-    activatedDate,
-  }: IFindQuestion): Promise<Question> {
+  async findQuestion(activated_date): Promise<Question> {
     return await this.questionRepository.findOne({
-      type,
-      activatedDate,
+      activated_date,
       activated: true,
     });
   }
