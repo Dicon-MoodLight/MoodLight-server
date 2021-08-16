@@ -1,8 +1,8 @@
 import { UserEmailDto } from '../../user/dto/user-email.dto';
-import { IsNumberString, Length } from 'class-validator';
+import { IntersectionType } from '@nestjs/swagger';
+import { ConfirmCodeDto } from './confirm-code.dto';
 
-export class ConfirmDto extends UserEmailDto {
-  @IsNumberString()
-  @Length(6, 6)
-  confirmCode: string;
-}
+export class ConfirmDto extends IntersectionType(
+  UserEmailDto,
+  ConfirmCodeDto,
+) {}

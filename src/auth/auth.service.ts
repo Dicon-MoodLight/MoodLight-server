@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { LoginDto } from './dto/login.dto';
@@ -13,11 +13,17 @@ import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
 import { throwHttpException } from '../util/error';
 import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
+import { Verification } from './entity/verfication.entity';
+import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verificationRepository: Repository<Verification>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -30,31 +36,40 @@ export class AuthService {
     adminKey,
   }: JoinDto): Promise<IStatusResponse> {
     try {
-      const emailHasUser = await this.userService.findUserByEmail(email);
-      const nicknameIsExist = !!(await this.userService.findUserByNickname(
-        nickname,
-        true,
-      ));
-      if (emailHasUser?.confirmed || nicknameIsExist) {
+      const userIsExist =
+        (await this.userService.findUserByNickname(nickname)) ||
+        (await this.userService.findUserByEmail(email));
+      if (userIsExist) {
         throwHttpException(
           { ...FAILURE_RESPONSE, message: 'User already exists.' },
           HttpStatus.CONFLICT,
         );
       }
+      const emailHasVerification = await this.verificationRepository.findOne({
+        email,
+        mode: 'join',
+      });
       const confirmCode = AuthService.createConfirmCode();
       const password = await AuthService.encryptPassword(plain);
-      const user = {
+      const verificationDto = {
         email,
-        nickname,
-        password,
         confirmCode,
-        is_admin: adminKey === this.configService.get<string>('ADMIN_KEY'),
+        user: JSON.stringify({
+          nickname,
+          password,
+          is_admin: adminKey === this.configService.get<string>('ADMIN_KEY'),
+        }),
       };
-      if (emailHasUser) {
-        await this.userRepository.update(emailHasUser.id, user);
+      if (emailHasVerification) {
+        await this.verificationRepository.update(
+          emailHasVerification.id,
+          verificationDto,
+        );
       } else {
-        const newUser = await this.userRepository.create(user);
-        await this.userRepository.save(newUser);
+        const newVerification = await this.verificationRepository.create(
+          verificationDto,
+        );
+        await this.verificationRepository.save(newVerification);
       }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
@@ -65,20 +80,25 @@ export class AuthService {
 
   async confirm(confirmDto: ConfirmDto): Promise<IStatusResponse> {
     try {
-      const user = await this.userRepository.findOne({
+      const verification = await this.verificationRepository.findOne({
         ...confirmDto,
-        confirmed: false,
+        mode: 'join',
       });
-      if (!user) {
+      if (!verification) {
         throwHttpException(
           {
             ...FAILURE_RESPONSE,
-            message: 'User does not exists.',
+            message: 'Verification does not exists.',
           },
           HttpStatus.BAD_REQUEST,
         );
       }
-      await this.userRepository.update(user.id, { confirmed: true });
+      const { email, user } = verification;
+      const newUser = this.userRepository.create({
+        email,
+        ...JSON.parse(user),
+      });
+      await this.userRepository.save(newUser);
     } catch (err) {
       throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
@@ -86,15 +106,96 @@ export class AuthService {
   }
 
   async login({ email, password: plain }: LoginDto): Promise<User> {
-    const { password } = await this.userRepository.findOne({
-      where: { email },
-      select: ['password'],
-    });
+    const password = await this.findUserPassword({ email });
     const isMatch = await bcrypt.compare(plain, password);
     if (isMatch) {
       return await this.userService.findUserByEmail(email);
     }
     throw new UnauthorizedException();
+  }
+
+  async changePassword({
+    userId: id,
+    password: plain,
+    newPassword,
+  }: ChangePasswordDto): Promise<IStatusResponse> {
+    try {
+      const password = await this.findUserPassword({ id });
+      if (!password) {
+        throwHttpException(
+          { ...FAILURE_RESPONSE, message: 'User does not exist.' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const isMatch = await bcrypt.compare(plain, password);
+      if (!isMatch) {
+        throwHttpException(
+          { ...FAILURE_RESPONSE, message: 'Unauthorized.' },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      await this.userRepository.update(id, { password: newPassword });
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  private async findUserPassword(where: FindConditions<User>): Promise<string> {
+    return (await this.userRepository.findOne({ where, select: ['password'] }))
+      ?.password;
+  }
+
+  async changePasswordNotLoggedIn(email): Promise<IStatusResponse> {
+    try {
+      const user = await this.userService.findUserByEmail(email);
+      if (!user) {
+        throwHttpException(
+          { ...FAILURE_RESPONSE, message: 'User email does not exist.' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const confirmCode = AuthService.createConfirmCode();
+      const newVerification = await this.verificationRepository.create({
+        email,
+        confirmCode,
+        mode: 'change_password',
+      });
+      await this.verificationRepository.save(newVerification);
+      await this.sendConfirmEmail(email, confirmCode);
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async confirmChangePasswordNotLoggedIn({
+    email,
+    confirmCode,
+    password,
+  }: ConfirmChangePasswordNotLoggedInDto): Promise<IStatusResponse> {
+    try {
+      const verification = await this.verificationRepository.findOne({
+        email,
+        confirmCode,
+        mode: 'change_password',
+      });
+      if (!verification) {
+        throwHttpException(
+          { ...FAILURE_RESPONSE, message: 'Verification does not exists.' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.updateUserPassword(email, password);
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  private async updateUserPassword(email, plainPassword): Promise<void> {
+    const password = await AuthService.encryptPassword(plainPassword);
+    await this.userRepository.update({ email }, { password });
   }
 
   createJwtAccessToken({ id, email }): string {

@@ -18,8 +18,8 @@ export class UserController {
   ): Promise<IExistResponse> {
     return {
       exist: !!(email
-        ? await this.userService.findUserByEmail(email, true)
-        : await this.userService.findUserByNickname(nickname, true)),
+        ? await this.userService.findUserByEmail(email)
+        : await this.userService.findUserByNickname(nickname)),
     };
   }
 

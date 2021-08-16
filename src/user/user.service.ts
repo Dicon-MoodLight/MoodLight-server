@@ -17,23 +17,15 @@ export class UserService {
     return await this.userRepository.findOne({ id });
   }
 
-  async findUserByEmail(
-    email: string,
-    confirmed: boolean = null,
-  ): Promise<User> {
+  async findUserByEmail(email: string): Promise<User> {
     return await this.userRepository.findOne({
       email,
-      ...(confirmed !== null ? { confirmed } : {}),
     });
   }
 
-  async findUserByNickname(
-    nickname: string,
-    confirmed: boolean = null,
-  ): Promise<User> {
+  async findUserByNickname(nickname: string): Promise<User> {
     return await this.userRepository.findOne({
       nickname,
-      ...(confirmed !== null ? { confirmed } : {}),
     });
   }
 
