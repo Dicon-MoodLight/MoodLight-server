@@ -8,6 +8,13 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 import { throwHttpException } from '../util/error';
 import { QuestionService } from '../question/question.service';
 
+interface IFindAnswers {
+  readonly questionId: string;
+  readonly userId: any;
+  readonly skip: number;
+  readonly take: number;
+}
+
 @Injectable()
 export class AnswerService {
   constructor(
@@ -20,14 +27,15 @@ export class AnswerService {
     return await this.answerRepository.findOne({ id });
   }
 
-  async findAnswersByQuestionId(
-    questionId: string,
-    skip: number,
-    take: number,
-  ): Promise<Answer[]> {
+  async findAnswers({
+    questionId,
+    userId,
+    skip,
+    take,
+  }: IFindAnswers): Promise<Answer[]> {
     return await this.answerRepository.find({
       where: { question: questionId, private: false },
-      order: { id: 'DESC' },
+      order: { user: userId, id: 'DESC' },
       skip,
       take,
     });

@@ -8,6 +8,13 @@ import { throwHttpException } from '../util/error';
 import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
 import { AnswerService } from '../answer/answer.service';
 
+interface IFindComments {
+  readonly answerId: string;
+  readonly userId: any;
+  readonly skip: number;
+  readonly take: number;
+}
+
 @Injectable()
 export class CommentService {
   constructor(
@@ -16,10 +23,17 @@ export class CommentService {
     private readonly answerService: AnswerService,
   ) {}
 
-  async findCommentsByAnswerId(answerId, userId): Promise<Comment[]> {
+  async findComments({
+    answerId,
+    userId,
+    skip,
+    take,
+  }: IFindComments): Promise<Comment[]> {
     return await this.commentRepository.find({
-      where: { answer: answerId },
+      where: { answer: { id: answerId } },
       order: { user: userId, id: 'DESC' },
+      skip,
+      take,
     });
   }
 

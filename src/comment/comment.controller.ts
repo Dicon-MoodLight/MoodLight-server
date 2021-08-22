@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  Post, Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +13,7 @@ import { Comment } from './entity/comment.entity';
 import { IStatusResponse } from '../types/response';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { FindListDto } from '../util/dto/find-list.dto';
 
 @ApiTags('Comment')
 @Controller('comment')
@@ -24,10 +25,16 @@ export class CommentController {
   @Get(':id')
   async findComments(
     @Req() req: any,
-    @Param('id') answerId: string,
+    @Param('answerId') answerId: string,
+    @Query() { skip, take }: FindListDto,
   ): Promise<Comment[]> {
     const { id: userId } = req.user;
-    return await this.commentService.findCommentsByAnswerId(answerId, userId);
+    return await this.commentService.findComments({
+      answerId,
+      userId,
+      skip,
+      take,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

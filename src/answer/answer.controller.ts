@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -17,6 +16,7 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 import { IStatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FindListDto } from '../util/dto/find-list.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -28,13 +28,20 @@ export class AnswerController {
   ) {}
 
   @ApiOperation({ summary: '답변 리스트 가져오기 (최신순)' })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findAnswers(
-    @Param('id') id: string,
-    @Query('skip', ParseIntPipe) skip: number,
-    @Query('take', ParseIntPipe) take: number,
+    @Req() req: any,
+    @Param('questionId') questionId: string,
+    @Query() { skip, take }: FindListDto,
   ): Promise<Answer[]> {
-    return await this.answerService.findAnswersByQuestionId(id, skip, take);
+    const { id: userId } = req.user;
+    return await this.answerService.findAnswers({
+      questionId,
+      userId,
+      skip,
+      take,
+    });
   }
 
   @UseGuards(JwtAuthGuard)
