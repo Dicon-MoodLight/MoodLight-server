@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entity/question.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { Cron } from '@nestjs/schedule';
 import moment from 'moment';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { throwHttpException } from '../util/error';
+import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
+import { IStatusResponse } from '../types/response';
 
 @Injectable()
 export class QuestionService {
@@ -36,6 +40,7 @@ export class QuestionService {
         this.activateQuestionTemplate(true),
         this.activateQuestionTemplate(false),
       ]);
+      console.log('update...');
     }, 1000);
   }
 
@@ -48,5 +53,19 @@ export class QuestionService {
       activated_date,
       activated: true,
     });
+  }
+
+  async createQuestion(
+    createQuestionDto: CreateQuestionDto,
+  ): Promise<IStatusResponse> {
+    try {
+      const newQuestion = await this.questionRepository.create(
+        createQuestionDto,
+      );
+      await this.questionRepository.save(newQuestion);
+    } catch (err) {
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+    }
+    return SUCCESS_RESPONSE;
   }
 }
