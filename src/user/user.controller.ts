@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IExistResponse, IStatusResponse } from '../types/response';
 import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -30,6 +39,8 @@ export class UserController {
   }
 
   @ApiOperation({ summary: '사용자 정보 업데이트' })
+  @ApiBody({ type: UpdateUserDto })
+  @UseGuards(JwtAuthGuard)
   @Put()
   async updateUser(
     @Body() updateUserDto: UpdateUserDto,

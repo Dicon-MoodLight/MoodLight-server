@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -44,8 +44,8 @@ export class AnswerController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
+  @UseGuards(JwtAuthGuard)
   @Get('my')
   async findMyAnswers(@Req() req: any): Promise<Answer[]> {
     const { id } = req.user;
@@ -55,8 +55,9 @@ export class AnswerController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '답변 생성하기' })
+  @ApiBody({ type: CreateAnswerDto })
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createAnswer(
     @Req() req: any,

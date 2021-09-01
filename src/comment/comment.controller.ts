@@ -3,11 +3,12 @@ import {
   Controller,
   Get,
   Param,
-  Post, Query,
+  Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { Comment } from './entity/comment.entity';
 import { IStatusResponse } from '../types/response';
@@ -20,8 +21,8 @@ import { FindListDto } from '../util/dto/find-list.dto';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 리스트 가져오기 (최신순)' })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findComments(
     @Req() req: any,
@@ -37,8 +38,9 @@ export class CommentController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '댓글 생성하기' })
+  @ApiBody({ type: CreateCommentDto })
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createComment(
     @Req() req: any,

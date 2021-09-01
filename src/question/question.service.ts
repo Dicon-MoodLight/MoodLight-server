@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entity/question.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { Cron } from '@nestjs/schedule';
-import moment from 'moment';
+import * as moment from 'moment';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { throwHttpException } from '../util/error';
 import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
@@ -33,14 +33,14 @@ export class QuestionService {
     };
   }
 
-  @Cron('000 * * *')
+  @Cron('000 * * *', { timeZone: 'Asia/Seoul' })
   async updateTodayQuestion() {
     setTimeout(async () => {
       await Promise.all([
         this.activateQuestionTemplate(true),
         this.activateQuestionTemplate(false),
       ]);
-      console.log('update...');
+      console.log(`[${moment().format('YYYY-MM-DD')}] Question updated...`);
     }, 1000);
   }
 

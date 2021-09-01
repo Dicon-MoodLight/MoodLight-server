@@ -12,7 +12,8 @@ import { Verification } from '../auth/entity/verfication.entity';
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Verification) private verificationRepository: Repository<Verification>,
+    @InjectRepository(Verification)
+    private verificationRepository: Repository<Verification>,
   ) {}
 
   async getUserNicknameIsExist(
