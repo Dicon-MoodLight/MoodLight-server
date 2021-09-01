@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { LoginDto } from './dto/login.dto';
@@ -36,12 +36,16 @@ export class AuthService {
     adminKey,
   }: JoinDto): Promise<IStatusResponse> {
     try {
-      const userIsExist =
-        (await this.userService.findUserByNickname(nickname)) ||
-        (await this.userService.findUserByEmail(email));
-      if (userIsExist) {
+      const joinDataAvailability = await this.checkJoinDataAvailability({
+        email,
+        nickname,
+      });
+      if (joinDataAvailability !== 'available') {
         throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'User already exists.' },
+          {
+            ...FAILURE_RESPONSE,
+            message: `${joinDataAvailability} already exists.`,
+          },
           HttpStatus.CONFLICT,
         );
       }
@@ -53,9 +57,9 @@ export class AuthService {
       const password = await AuthService.encryptPassword(plain);
       const verificationDto = {
         email,
+        nickname,
         confirmCode,
         user: JSON.stringify({
-          nickname,
           password,
           is_admin: adminKey === this.configService.get<string>('ADMIN_KEY'),
         }),
@@ -78,6 +82,25 @@ export class AuthService {
     return SUCCESS_RESPONSE;
   }
 
+  private async checkJoinDataAvailability({
+    email,
+    nickname,
+  }): Promise<'Email' | 'Nickname' | 'available'> {
+    const verificationIsExist = this.verificationRepository.findOne({
+      nickname,
+    });
+    const nicknameIsExist = this.userService.findUserByNickname(nickname);
+    const emailIsExist = this.userService.findUserByEmail(email);
+    if (
+      (await nicknameIsExist) ||
+      (await emailIsExist) ||
+      (await verificationIsExist).email !== email
+    ) {
+      return emailIsExist ? 'Email' : 'Nickname';
+    }
+    return 'available';
+  }
+
   async confirm(confirmDto: ConfirmDto): Promise<IStatusResponse> {
     try {
       const verification = await this.verificationRepository.findOne({
@@ -93,9 +116,10 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const { email, user } = verification;
+      const { email, nickname, user } = verification;
       const newUser = this.userRepository.create({
         email,
+        nickname,
         ...JSON.parse(user),
       });
       await this.userRepository.save(newUser);

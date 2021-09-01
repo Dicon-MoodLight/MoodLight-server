@@ -17,9 +17,9 @@ export class UserController {
     @Query() { email, nickname }: GetUserIsExistDto,
   ): Promise<IExistResponse> {
     return {
-      exist: !!(email
-        ? await this.userService.findUserByEmail(email)
-        : await this.userService.findUserByNickname(nickname)),
+      exist: nickname
+        ? await this.userService.getUserNicknameIsExist(email, nickname)
+        : !!(await this.userService.findUserByEmail(email)),
     };
   }
 

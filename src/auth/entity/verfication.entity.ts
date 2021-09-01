@@ -16,6 +16,9 @@ export class Verification {
   @Column({ length: 320, nullable: false, unique: true })
   email: string;
 
+  @Column({ length: 13, nullable: true, unique: true })
+  nickname: string;
+
   @Column({ type: 'text', nullable: true })
   user: string;
 

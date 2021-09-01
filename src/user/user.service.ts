@@ -6,12 +6,26 @@ import { IStatusResponse } from '../types/response';
 import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { throwHttpException } from '../util/error';
+import { Verification } from '../auth/entity/verfication.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Verification) private verificationRepository: Repository<Verification>,
   ) {}
+
+  async getUserNicknameIsExist(
+    nickname: string,
+    email: string = undefined,
+  ): Promise<boolean> {
+    const nicknameIsExist = await this.verificationRepository.findOne({
+      nickname,
+    });
+    return !!(await this.findUserByNickname(nickname)) || email
+      ? nicknameIsExist.email !== email
+      : false;
+  }
 
   async findUserById(id: string): Promise<User> {
     return await this.userRepository.findOne({ id });
