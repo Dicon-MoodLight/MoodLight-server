@@ -8,7 +8,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation, ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -17,6 +22,7 @@ import { IStatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
+import { StatusResponseDto } from '../constants/response';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -28,6 +34,7 @@ export class AnswerController {
   ) {}
 
   @ApiOperation({ summary: '답변 리스트 가져오기 (최신순)' })
+  @ApiResponse({ status: 200, type: Answer, isArray: true })
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findAnswers(
@@ -45,6 +52,7 @@ export class AnswerController {
   }
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
+  @ApiResponse({ status: 200, type: Answer, isArray: true })
   @UseGuards(JwtAuthGuard)
   @Get('my')
   async findMyAnswers(@Req() req: any): Promise<Answer[]> {
@@ -57,6 +65,7 @@ export class AnswerController {
 
   @ApiOperation({ summary: '답변 생성하기' })
   @ApiBody({ type: CreateAnswerDto })
+  @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Post()
   async createAnswer(

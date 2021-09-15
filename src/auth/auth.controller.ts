@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { IStatusResponse } from '../types/response';
-import { SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponseDto, SUCCESS_RESPONSE } from '../constants/response';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { ILoginResponse } from './interface/response';
 import { JoinDto } from './dto/join.dto';
@@ -19,6 +19,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: '인증 토큰 검증' })
+  @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Get()
   async authorization(): Promise<IStatusResponse> {
@@ -27,6 +28,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '가입 요청' })
   @ApiBody({ type: JoinDto })
+  @ApiResponse({ type: StatusResponseDto })
   @Post('join')
   async join(@Body() joinDto: JoinDto): Promise<IStatusResponse> {
     return await this.authService.join(joinDto);
@@ -34,6 +36,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '가입 인증' })
   @ApiBody({ type: ConfirmDto })
+  @ApiResponse({ type: StatusResponseDto })
   @Post('confirm')
   async confirm(@Body() confirmDto: ConfirmDto): Promise<IStatusResponse> {
     return await this.authService.confirm(confirmDto);
@@ -41,6 +44,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '로그인' })
   @ApiBody({ type: LoginDto })
+  @ApiResponse({ description: '{ accessToken: string; }' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any): Promise<ILoginResponse> {
@@ -51,6 +55,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '비밀번호 변경' })
   @ApiBody({ type: ChangePasswordDto })
+  @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   async changePassword(
@@ -66,6 +71,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '비밀번호 찾기' })
   @ApiBody({ type: UserEmailDto })
+  @ApiResponse({ type: StatusResponseDto })
   @Post('find-password')
   async findPassword(
     @Body() { email }: UserEmailDto,
@@ -75,6 +81,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '비밀번호 찾기 인증' })
   @ApiBody({ type: ConfirmChangePasswordNotLoggedInDto })
+  @ApiResponse({ type: StatusResponseDto })
   @Post('confirm-find-password')
   async confirmFindPassword(
     @Body()
