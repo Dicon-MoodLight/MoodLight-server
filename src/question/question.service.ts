@@ -35,16 +35,13 @@ export class QuestionService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })
   async updateTodayQuestion() {
-    const date = new Date();
-    if (date.getHours() + date.getMinutes() === 0) {
-      setTimeout(async () => {
-        await Promise.all([
-          this.activateQuestionTemplate(true),
-          this.activateQuestionTemplate(false),
-        ]);
-        console.log(`[${moment().format('YYYY-MM-DD')}] Question updated...`);
-      }, 1000);
-    }
+    setTimeout(async () => {
+      await Promise.all([
+        this.activateQuestionTemplate(true),
+        this.activateQuestionTemplate(false),
+      ]);
+      console.log(`[${moment().format('YYYY-MM-DD')}] Question updated...`);
+    }, 1000);
   }
 
   async findQuestionById(id: string): Promise<Question> {
