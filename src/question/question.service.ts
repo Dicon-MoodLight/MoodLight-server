@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entity/question.entity';
 import { Repository, UpdateResult } from 'typeorm';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { throwHttpException } from '../util/error';
@@ -33,7 +33,7 @@ export class QuestionService {
     };
   }
 
-  @Cron('000 * * *', { timeZone: 'Asia/Seoul' })
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })
   async updateTodayQuestion() {
     setTimeout(async () => {
       await Promise.all([

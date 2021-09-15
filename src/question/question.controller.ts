@@ -8,7 +8,12 @@ import {
   UseGuards,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { QuestionService } from './question.service';
 import { Question } from './entity/question.entity';
 import { IStatusResponse } from '../types/response';
