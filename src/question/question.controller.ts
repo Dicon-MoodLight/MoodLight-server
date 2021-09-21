@@ -9,6 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
@@ -36,6 +37,7 @@ export class QuestionController {
 
   @ApiOperation({ summary: '질문 생성하기' })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createQuestion(

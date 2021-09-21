@@ -9,7 +9,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -46,6 +46,7 @@ export class UserController {
   @ApiOperation({ summary: '사용자 정보 업데이트' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateUser(
@@ -55,6 +56,8 @@ export class UserController {
   }
 
   @ApiOperation({ summary: '사용자 탈퇴' })
+  @ApiResponse({ type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteUser(@Req() req: any): Promise<StatusResponse> {

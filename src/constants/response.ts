@@ -1,4 +1,8 @@
-import { FailureResponseMessage, StatusResponse } from '../types/response';
+import {
+  FailureResponseMessage,
+  failureResponseMessageList,
+  StatusResponse,
+} from '../types/response';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -16,7 +20,9 @@ export class StatusResponseDto {
   @IsBoolean()
   success: boolean;
 
-  @ApiProperty({ description: '에러 메세지 (실패할 경우)' })
+  @ApiProperty({
+    description: `에러 메세지 (실패할 경우)\n\n [${failureResponseMessageList}]`,
+  })
   @IsString()
   @IsOptional()
   message: FailureResponseMessage;

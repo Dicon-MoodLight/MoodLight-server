@@ -40,7 +40,9 @@ export class QuestionService {
         this.activateQuestionTemplate(true),
         this.activateQuestionTemplate(false),
       ]);
-      console.log(`[${moment().format('YYYY-MM-DD')}] Question updated...`);
+      console.log(
+        `[${moment().format('YYYY-MM-DD HH:MM:SS')}] Question updated...`,
+      );
     }, 1000);
   }
 

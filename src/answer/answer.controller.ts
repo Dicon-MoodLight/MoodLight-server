@@ -9,9 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
-  ApiOperation, ApiResponse,
+  ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
@@ -35,6 +37,7 @@ export class AnswerController {
 
   @ApiOperation({ summary: '답변 리스트 가져오기 (최신순)' })
   @ApiResponse({ status: 200, type: Answer, isArray: true })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findAnswers(
@@ -53,6 +56,7 @@ export class AnswerController {
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
   @ApiResponse({ status: 200, type: Answer, isArray: true })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('my')
   async findMyAnswers(@Req() req: any): Promise<Answer[]> {
@@ -66,6 +70,7 @@ export class AnswerController {
   @ApiOperation({ summary: '답변 생성하기' })
   @ApiBody({ type: CreateAnswerDto })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createAnswer(

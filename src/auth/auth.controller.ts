@@ -1,5 +1,13 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { StatusResponse } from '../types/response';
@@ -20,6 +28,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '인증 토큰 검증' })
   @ApiResponse({ type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
   async authorization(): Promise<StatusResponse> {
@@ -44,7 +53,9 @@ export class AuthController {
 
   @ApiOperation({ summary: '로그인' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ description: '{ accessToken: string; }' })
+  @ApiOkResponse({ description: '{ accessToken: string; }' })
+  @ApiUnauthorizedResponse({ type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any): Promise<ILoginResponse> {
@@ -56,6 +67,7 @@ export class AuthController {
   @ApiOperation({ summary: '비밀번호 변경' })
   @ApiBody({ type: ChangePasswordDto })
   @ApiResponse({ type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   async changePassword(
@@ -73,9 +85,7 @@ export class AuthController {
   @ApiBody({ type: UserEmailDto })
   @ApiResponse({ type: StatusResponseDto })
   @Post('find-password')
-  async findPassword(
-    @Body() { email }: UserEmailDto,
-  ): Promise<StatusResponse> {
+  async findPassword(@Body() { email }: UserEmailDto): Promise<StatusResponse> {
     return await this.authService.changePasswordNotLoggedIn(email);
   }
 

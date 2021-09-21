@@ -8,7 +8,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { Comment } from './entity/comment.entity';
 import { StatusResponse } from '../types/response';
@@ -24,6 +31,7 @@ export class CommentController {
 
   @ApiOperation({ summary: '댓글 리스트 가져오기 (최신순)' })
   @ApiResponse({ status: 200, type: Comment, isArray: true })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findComments(
@@ -43,6 +51,7 @@ export class CommentController {
   @ApiOperation({ summary: '댓글 생성하기' })
   @ApiBody({ type: CreateCommentDto })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createComment(

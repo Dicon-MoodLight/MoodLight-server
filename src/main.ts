@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 const PORT = process.env.PORT || 5000;
 
-async function bootstrap() {
+(async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: { origin: true, credentials: true },
   });
@@ -13,6 +13,15 @@ async function bootstrap() {
     .setTitle('Mood light')
     .setDescription('Mood light 서버 API 문서입니다.')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        in: 'header',
+        bearerFormat: 'JWT',
+        description: '인증 토큰을 입력하세요',
+      },
+      'Authorization',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
@@ -26,5 +35,4 @@ async function bootstrap() {
   await app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
   });
-}
-bootstrap();
+})();
