@@ -77,8 +77,7 @@ export class AuthService {
       }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      console.log(err);
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -125,8 +124,7 @@ export class AuthService {
       });
       await this.userRepository.save(newUser);
     } catch (err) {
-      console.log(err);
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -162,7 +160,7 @@ export class AuthService {
       }
       await this.userRepository.update(id, { password: newPassword });
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -190,7 +188,7 @@ export class AuthService {
       await this.verificationRepository.save(newVerification);
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -214,7 +212,7 @@ export class AuthService {
       }
       await this.updateUserPassword(email, password);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
     }
     return SUCCESS_RESPONSE;
   }
