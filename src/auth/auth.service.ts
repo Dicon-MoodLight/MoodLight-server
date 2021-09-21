@@ -77,6 +77,7 @@ export class AuthService {
       }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
+      console.log(err);
       throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
@@ -94,7 +95,7 @@ export class AuthService {
     if (
       (await nicknameIsExist) ||
       (await emailIsExist) ||
-      (await verificationIsExist).email !== email
+      (await verificationIsExist)?.email
     ) {
       return emailIsExist ? 'Email' : 'Nickname';
     }
@@ -124,6 +125,7 @@ export class AuthService {
       });
       await this.userRepository.save(newUser);
     } catch (err) {
+      console.log(err);
       throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;

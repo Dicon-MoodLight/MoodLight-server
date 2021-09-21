@@ -13,16 +13,16 @@ export class Verification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 320, nullable: false, unique: true })
+  @Column({ length: 320, nullable: false, unique: true, select: true })
   email: string;
 
-  @Column({ length: 13, nullable: true, unique: true })
+  @Column({ length: 13, nullable: true, unique: true, select: true })
   nickname: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, select: true })
   user: string;
 
-  @Column({ length: '15', nullable: false })
+  @Column({ length: '15', nullable: false, default: 'join', select: true })
   mode: IVerificationMode;
 
   @Column({ length: 6, nullable: true, select: false })

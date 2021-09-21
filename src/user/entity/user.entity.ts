@@ -24,7 +24,7 @@ export class User {
   @ApiProperty({ description: '이메일' })
   email: string;
 
-  @Column({ length: 24, nullable: false, select: false })
+  @Column({ length: 150, nullable: false, select: false })
   @ApiProperty({ description: '비밀번호' })
   password: string;
 
