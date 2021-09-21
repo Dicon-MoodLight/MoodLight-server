@@ -11,7 +11,7 @@ import { UserService } from '../user/user.service';
 import { StatusResponse } from '../types/response';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { SUCCESS_RESPONSE } from '../constants/response';
-import { throwHttpException } from '../util/error';
+import { exceptionHandler } from '../util/error';
 import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
 import { Verification } from './entity/verfication.entity';
@@ -71,7 +71,7 @@ export class AuthService {
       }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -112,7 +112,7 @@ export class AuthService {
       });
       await this.userRepository.save(newUser);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -126,9 +126,12 @@ export class AuthService {
           return await this.userService.findUserByEmail(email);
         }
       }
-      throw 'Unauthorized.';
+      throw {
+        message: 'Unauthorized.',
+        status: HttpStatus.UNAUTHORIZED,
+      };
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
   }
 

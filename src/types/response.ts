@@ -3,11 +3,11 @@ export type StatusResponse = {
   message?: string;
 };
 
-export interface ExistResponse {
+export type ExistResponse = {
   exist: boolean;
-}
+};
 
-export const failureResponseMessageList = [
+export const exceptionMessageList = [
   'Unauthorized.',
   'Verification does not exists.',
   'User does not exist.',
@@ -17,4 +17,9 @@ export const failureResponseMessageList = [
   'error',
 ] as const;
 
-export type FailureResponseMessage = typeof failureResponseMessageList[number];
+export type ExceptionMessage = typeof exceptionMessageList[number];
+
+export type Exception = {
+  message: ExceptionMessage;
+  status: number;
+};
