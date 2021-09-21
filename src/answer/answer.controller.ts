@@ -18,7 +18,7 @@ import { AnswerService } from './answer.service';
 import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create-answer.dto';
-import { IStatusResponse } from '../types/response';
+import { StatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
@@ -71,7 +71,7 @@ export class AnswerController {
   async createAnswer(
     @Req() req: any,
     @Body() createAnswerDto: CreateAnswerDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     const { id: userId } = req.user;
     return await this.answerService.createAnswer({
       ...createAnswerDto,

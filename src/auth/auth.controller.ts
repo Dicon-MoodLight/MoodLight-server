@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
-import { IStatusResponse } from '../types/response';
+import { StatusResponse } from '../types/response';
 import { StatusResponseDto, SUCCESS_RESPONSE } from '../constants/response';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { ILoginResponse } from './interface/response';
@@ -22,7 +22,7 @@ export class AuthController {
   @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Get()
-  async authorization(): Promise<IStatusResponse> {
+  async authorization(): Promise<StatusResponse> {
     return SUCCESS_RESPONSE;
   }
 
@@ -30,7 +30,7 @@ export class AuthController {
   @ApiBody({ type: JoinDto })
   @ApiResponse({ type: StatusResponseDto })
   @Post('join')
-  async join(@Body() joinDto: JoinDto): Promise<IStatusResponse> {
+  async join(@Body() joinDto: JoinDto): Promise<StatusResponse> {
     return await this.authService.join(joinDto);
   }
 
@@ -38,7 +38,7 @@ export class AuthController {
   @ApiBody({ type: ConfirmDto })
   @ApiResponse({ type: StatusResponseDto })
   @Post('confirm')
-  async confirm(@Body() confirmDto: ConfirmDto): Promise<IStatusResponse> {
+  async confirm(@Body() confirmDto: ConfirmDto): Promise<StatusResponse> {
     return await this.authService.confirm(confirmDto);
   }
 
@@ -61,7 +61,7 @@ export class AuthController {
   async changePassword(
     @Req() req: any,
     @Body() changePasswordDto: ChangePasswordDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     const { id: userId } = req.user;
     return await this.authService.changePassword({
       ...changePasswordDto,
@@ -75,7 +75,7 @@ export class AuthController {
   @Post('find-password')
   async findPassword(
     @Body() { email }: UserEmailDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     return await this.authService.changePasswordNotLoggedIn(email);
   }
 
@@ -86,7 +86,7 @@ export class AuthController {
   async confirmFindPassword(
     @Body()
     confirmChangePasswordNotLoggedInDto: ConfirmChangePasswordNotLoggedInDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     return await this.authService.confirmChangePasswordNotLoggedIn(
       confirmChangePasswordNotLoggedInDto,
     );

@@ -6,8 +6,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { throwHttpException } from '../util/error';
-import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
-import { IStatusResponse } from '../types/response';
+import { SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponse } from '../types/response';
 
 @Injectable()
 export class QuestionService {
@@ -57,14 +57,14 @@ export class QuestionService {
 
   async createQuestion(
     createQuestionDto: CreateQuestionDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     try {
       const newQuestion = await this.questionRepository.create(
         createQuestionDto,
       );
       await this.questionRepository.save(newQuestion);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }

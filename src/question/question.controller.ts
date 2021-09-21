@@ -16,11 +16,11 @@ import {
 } from '@nestjs/swagger';
 import { QuestionService } from './question.service';
 import { Question } from './entity/question.entity';
-import { IStatusResponse } from '../types/response';
+import { StatusResponse } from '../types/response';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { throwHttpException } from '../util/error';
-import { FAILURE_RESPONSE, StatusResponseDto } from '../constants/response';
+import { StatusResponseDto } from '../constants/response';
 
 @ApiTags('Question')
 @Controller('question')
@@ -41,13 +41,10 @@ export class QuestionController {
   async createQuestion(
     @Req() req: any,
     @Body() createQuestionDto: CreateQuestionDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     const { is_admin } = req.user;
     if (!is_admin) {
-      throwHttpException(
-        { ...FAILURE_RESPONSE, message: 'User does not admin.' },
-        HttpStatus.FORBIDDEN,
-      );
+      throwHttpException('User does not admin.', HttpStatus.FORBIDDEN);
     }
     return await this.questionService.createQuestion(createQuestionDto);
   }

@@ -11,7 +11,7 @@ import {
 import { ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { Comment } from './entity/comment.entity';
-import { IStatusResponse } from '../types/response';
+import { StatusResponse } from '../types/response';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { FindListDto } from '../util/dto/find-list.dto';
@@ -48,7 +48,7 @@ export class CommentController {
   async createComment(
     @Req() req: any,
     @Body() createCommentDto: CreateCommentDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     const { id: userId } = req.user;
     return await this.commentService.createComment({
       ...createCommentDto,

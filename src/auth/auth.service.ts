@@ -1,21 +1,21 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
-import { ConfigService } from '@nestjs/config';
-import { IStatusResponse } from '../types/response';
-import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponse } from '../types/response';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
+import { SUCCESS_RESPONSE } from '../constants/response';
 import { throwHttpException } from '../util/error';
 import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
 import { Verification } from './entity/verfication.entity';
 import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
-import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
@@ -34,20 +34,14 @@ export class AuthService {
     password: plain,
     nickname,
     adminKey,
-  }: JoinDto): Promise<IStatusResponse> {
+  }: JoinDto): Promise<StatusResponse> {
     try {
       const joinDataAvailability = await this.checkJoinDataAvailability({
         email,
         nickname,
       });
       if (joinDataAvailability !== 'available') {
-        throwHttpException(
-          {
-            ...FAILURE_RESPONSE,
-            message: `${joinDataAvailability} already exists.`,
-          },
-          HttpStatus.CONFLICT,
-        );
+        throw `${joinDataAvailability} already exists.`;
       }
       const emailHasVerification = await this.verificationRepository.findOne({
         email,
@@ -77,7 +71,7 @@ export class AuthService {
       }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
@@ -101,20 +95,14 @@ export class AuthService {
     return 'available';
   }
 
-  async confirm(confirmDto: ConfirmDto): Promise<IStatusResponse> {
+  async confirm(confirmDto: ConfirmDto): Promise<StatusResponse> {
     try {
       const verification = await this.verificationRepository.findOne({
         ...confirmDto,
         mode: 'join',
       });
       if (!verification) {
-        throwHttpException(
-          {
-            ...FAILURE_RESPONSE,
-            message: 'Verification does not exists.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+        throw 'Verification does not exists.';
       }
       const { email, nickname, user } = verification;
       const newUser = this.userRepository.create({
@@ -124,43 +112,43 @@ export class AuthService {
       });
       await this.userRepository.save(newUser);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
 
   async login({ email, password: plain }: LoginDto): Promise<User> {
-    const password = await this.findUserPassword({ email });
-    const isMatch = await bcrypt.compare(plain, password);
-    if (isMatch) {
-      return await this.userService.findUserByEmail(email);
+    try {
+      const password = await this.findUserPassword({ email });
+      if (password) {
+        const isMatch = await bcrypt.compare(plain, password);
+        if (isMatch) {
+          return await this.userService.findUserByEmail(email);
+        }
+      }
+      throw 'Unauthorized.';
+    } catch (err) {
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
-    throw new UnauthorizedException();
   }
 
   async changePassword({
     userId: id,
     password: plain,
     newPassword,
-  }: ChangePasswordDto): Promise<IStatusResponse> {
+  }: ChangePasswordDto): Promise<StatusResponse> {
     try {
       const password = await this.findUserPassword({ id });
       if (!password) {
-        throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'User does not exist.' },
-          HttpStatus.BAD_REQUEST,
-        );
+        throw 'User does not exist.';
       }
       const isMatch = await bcrypt.compare(plain, password);
       if (!isMatch) {
-        throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'Unauthorized.' },
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw 'Unauthorized';
       }
       await this.userRepository.update(id, { password: newPassword });
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
@@ -170,14 +158,11 @@ export class AuthService {
       ?.password;
   }
 
-  async changePasswordNotLoggedIn(email): Promise<IStatusResponse> {
+  async changePasswordNotLoggedIn(email): Promise<StatusResponse> {
     try {
       const user = await this.userService.findUserByEmail(email);
       if (!user) {
-        throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'User email does not exist.' },
-          HttpStatus.BAD_REQUEST,
-        );
+        throw 'User email does not exist.';
       }
       const confirmCode = AuthService.createConfirmCode();
       const newVerification = await this.verificationRepository.create({
@@ -188,7 +173,7 @@ export class AuthService {
       await this.verificationRepository.save(newVerification);
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
@@ -197,7 +182,7 @@ export class AuthService {
     email,
     confirmCode,
     password,
-  }: ConfirmChangePasswordNotLoggedInDto): Promise<IStatusResponse> {
+  }: ConfirmChangePasswordNotLoggedInDto): Promise<StatusResponse> {
     try {
       const verification = await this.verificationRepository.findOne({
         email,
@@ -205,14 +190,11 @@ export class AuthService {
         mode: 'change_password',
       });
       if (!verification) {
-        throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'Verification does not exists.' },
-          HttpStatus.BAD_REQUEST,
-        );
+        throw 'Verification does not exists.';
       }
       await this.updateUserPassword(email, password);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT, err);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }

@@ -1,12 +1,12 @@
-import { IStatusResponse } from '../types/response';
+import { FailureResponseMessage, StatusResponse } from '../types/response';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export const SUCCESS_RESPONSE: IStatusResponse = {
+export const SUCCESS_RESPONSE: StatusResponse = {
   success: true,
 };
 
-export const FAILURE_RESPONSE: IStatusResponse = {
+export const FAILURE_RESPONSE: StatusResponse = {
   success: false,
   message: 'error',
 };
@@ -19,5 +19,5 @@ export class StatusResponseDto {
   @ApiProperty({ description: '에러 메세지 (실패할 경우)' })
   @IsString()
   @IsOptional()
-  message: string;
+  message: FailureResponseMessage;
 }

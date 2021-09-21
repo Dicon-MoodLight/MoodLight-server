@@ -1,11 +1,22 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { IStatusResponse } from '../types/response';
+import { FAILURE_RESPONSE } from '../constants/response';
+import {
+  FailureResponseMessage,
+  failureResponseMessageList,
+} from '../types/response';
 
 export function throwHttpException(
-  response: IStatusResponse,
+  response: FailureResponseMessage,
   status: HttpStatus,
-  err = 'default',
 ) {
-  console.log(`[${new Date()}] - ${err} / ${response.message}`);
-  throw new HttpException(response, status);
+  console.log(`[${new Date()}] - ${response}`);
+  throw new HttpException(
+    failureResponseMessageList.includes(response)
+      ? {
+          ...FAILURE_RESPONSE,
+          message: response,
+        }
+      : FAILURE_RESPONSE,
+    status,
+  );
 }

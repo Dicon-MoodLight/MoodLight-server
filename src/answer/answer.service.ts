@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
-import { IStatusResponse } from '../types/response';
-import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponse } from '../types/response';
+import { SUCCESS_RESPONSE } from '../constants/response';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { throwHttpException } from '../util/error';
 import { QuestionService } from '../question/question.service';
@@ -45,14 +45,11 @@ export class AnswerService {
     userId,
     questionId,
     ...createAnswerDto
-  }: CreateAnswerDto): Promise<IStatusResponse> {
+  }: CreateAnswerDto): Promise<StatusResponse> {
     try {
       const question = await this.questionService.findQuestionById(questionId);
       if (!question.activated) {
-        throwHttpException(
-          { ...FAILURE_RESPONSE, message: 'Question is not activated.' },
-          HttpStatus.CONFLICT,
-        );
+        throw 'Question is not activated.';
       }
       const answer = await this.answerRepository.create({
         ...createAnswerDto,
@@ -61,7 +58,7 @@ export class AnswerService {
       });
       await this.answerRepository.save(answer);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }

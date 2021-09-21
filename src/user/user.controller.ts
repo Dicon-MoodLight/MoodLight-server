@@ -1,17 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IExistResponse, IStatusResponse } from '../types/response';
+import { ExistResponse, StatusResponse } from '../types/response';
 import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { StatusResponseDto } from '../constants/response';
@@ -26,7 +28,7 @@ export class UserController {
   @Get('exist')
   async getUserIsExist(
     @Query() { email, nickname }: GetUserIsExistDto,
-  ): Promise<IExistResponse> {
+  ): Promise<ExistResponse> {
     return {
       exist: nickname
         ? await this.userService.getUserNicknameIsExist(email, nickname)
@@ -48,7 +50,15 @@ export class UserController {
   @Put()
   async updateUser(
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IStatusResponse> {
+  ): Promise<StatusResponse> {
     return await this.userService.updateUser(updateUserDto);
+  }
+
+  @ApiOperation({ summary: '사용자 탈퇴' })
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteUser(@Req() req: any): Promise<StatusResponse> {
+    const { id } = req.user;
+    return await this.userService.deleteUser(id);
   }
 }

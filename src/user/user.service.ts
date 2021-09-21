@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
-import { IStatusResponse } from '../types/response';
-import { FAILURE_RESPONSE, SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponse } from '../types/response';
+import { SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { throwHttpException } from '../util/error';
 import { Verification } from '../auth/entity/verfication.entity';
@@ -47,20 +47,20 @@ export class UserService {
   async updateUser({
     id,
     ...updateUserDto
-  }: UpdateUserDto): Promise<IStatusResponse> {
+  }: UpdateUserDto): Promise<StatusResponse> {
     try {
       await this.userRepository.update(id, updateUserDto);
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
 
-  async deleteUser(id): Promise<IStatusResponse> {
+  async deleteUser(id): Promise<StatusResponse> {
     try {
       await this.userRepository.delete({ id });
     } catch (err) {
-      throwHttpException(FAILURE_RESPONSE, HttpStatus.CONFLICT);
+      throwHttpException(err, HttpStatus.CONFLICT);
     }
     return SUCCESS_RESPONSE;
   }
