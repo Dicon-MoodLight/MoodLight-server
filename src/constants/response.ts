@@ -2,11 +2,9 @@ import {
   exceptionMessageList,
   ExceptionMessage,
   StatusResponse,
-  Exception,
 } from '../types/response';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { HttpStatus } from '@nestjs/common';
 
 export const SUCCESS_RESPONSE: StatusResponse = {
   success: true,
@@ -15,11 +13,6 @@ export const SUCCESS_RESPONSE: StatusResponse = {
 export const FAILURE_RESPONSE: StatusResponse = {
   success: false,
   message: 'error',
-};
-
-export const DEFAULT_EXCEPTION: Exception = {
-  message: 'error',
-  status: HttpStatus.CONFLICT,
 };
 
 export class StatusResponseDto {

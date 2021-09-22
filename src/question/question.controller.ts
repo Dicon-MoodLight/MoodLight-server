@@ -6,7 +6,6 @@ import {
   Query,
   Req,
   UseGuards,
-  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,8 +19,8 @@ import { Question } from './entity/question.entity';
 import { StatusResponse } from '../types/response';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { throwHttpException } from '../util/error';
 import { StatusResponseDto } from '../constants/response';
+import { NOT_ADMIN_EXCEPTION } from '../constants/exception';
 
 @ApiTags('Question')
 @Controller('question')
@@ -46,7 +45,7 @@ export class QuestionController {
   ): Promise<StatusResponse> {
     const { is_admin } = req.user;
     if (!is_admin) {
-      throwHttpException('User does not admin.', HttpStatus.FORBIDDEN);
+      throw NOT_ADMIN_EXCEPTION;
     }
     return await this.questionService.createQuestion(createQuestionDto);
   }

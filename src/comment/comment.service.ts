@@ -1,12 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entity/comment.entity';
 import { StatusResponse } from '../types/response';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { throwHttpException } from '../util/error';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { AnswerService } from '../answer/answer.service';
+import { exceptionHandler } from '../util/error';
 
 interface IFindComments {
   readonly answerId: string;
@@ -45,7 +45,7 @@ export class CommentService {
     try {
       const answer = await this.answerService.findAnswerById(answerId);
       if (answer.private) {
-        throwHttpException('Answer is private.', HttpStatus.CONFLICT);
+        throw 'Answer is private.';
       }
       const comment = await this.commentRepository.create({
         contents,
@@ -54,7 +54,7 @@ export class CommentService {
       });
       await this.commentRepository.save(comment);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }

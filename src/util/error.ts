@@ -1,6 +1,7 @@
 import { HttpException } from '@nestjs/common';
-import { DEFAULT_EXCEPTION, FAILURE_RESPONSE } from '../constants/response';
+import { FAILURE_RESPONSE } from '../constants/response';
 import { exceptionMessageList, Exception } from '../types/response';
+import { DEFAULT_EXCEPTION } from '../constants/exception';
 
 export function exceptionHandler(exception: Exception | string) {
   if (typeof exception === 'string')
@@ -11,7 +12,7 @@ export function exceptionHandler(exception: Exception | string) {
     exceptionMessageList.includes(message)
       ? {
           ...FAILURE_RESPONSE,
-          message: exception,
+          message,
         }
       : FAILURE_RESPONSE,
     status,

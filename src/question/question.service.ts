@@ -1,13 +1,13 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entity/question.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { throwHttpException } from '../util/error';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { StatusResponse } from '../types/response';
+import { exceptionHandler } from '../util/error';
 
 @Injectable()
 export class QuestionService {
@@ -66,7 +66,7 @@ export class QuestionService {
       );
       await this.questionRepository.save(newQuestion);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }

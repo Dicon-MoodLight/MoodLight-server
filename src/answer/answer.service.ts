@@ -1,12 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { CreateAnswerDto } from './dto/create-answer.dto';
-import { throwHttpException } from '../util/error';
 import { QuestionService } from '../question/question.service';
+import { exceptionHandler } from '../util/error';
 
 interface IFindAnswers {
   readonly questionId: string;
@@ -58,7 +58,7 @@ export class AnswerService {
       });
       await this.answerRepository.save(answer);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }

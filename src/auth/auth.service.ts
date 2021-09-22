@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -17,6 +17,7 @@ import { ConfirmDto } from './dto/confirm.dto';
 import { Verification } from './entity/verfication.entity';
 import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UNAUTHORIZED_EXCEPTION } from '../constants/exception';
 
 @Injectable()
 export class AuthService {
@@ -126,10 +127,7 @@ export class AuthService {
           return await this.userService.findUserByEmail(email);
         }
       }
-      throw {
-        message: 'Unauthorized.',
-        status: HttpStatus.UNAUTHORIZED,
-      };
+      throw UNAUTHORIZED_EXCEPTION;
     } catch (err) {
       exceptionHandler(err);
     }
@@ -147,11 +145,11 @@ export class AuthService {
       }
       const isMatch = await bcrypt.compare(plain, password);
       if (!isMatch) {
-        throw 'Unauthorized';
+        throw UNAUTHORIZED_EXCEPTION;
       }
       await this.userRepository.update(id, { password: newPassword });
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -176,7 +174,7 @@ export class AuthService {
       await this.verificationRepository.save(newVerification);
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -197,7 +195,7 @@ export class AuthService {
       }
       await this.updateUserPassword(email, password);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }

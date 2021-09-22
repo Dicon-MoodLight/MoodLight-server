@@ -5,8 +5,8 @@ import { User } from './entity/user.entity';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { throwHttpException } from '../util/error';
 import { Verification } from '../auth/entity/verfication.entity';
+import { exceptionHandler } from '../util/error';
 
 @Injectable()
 export class UserService {
@@ -51,7 +51,7 @@ export class UserService {
     try {
       await this.userRepository.update(id, updateUserDto);
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
@@ -60,7 +60,7 @@ export class UserService {
     try {
       await this.userRepository.delete({ id });
     } catch (err) {
-      throwHttpException(err, HttpStatus.CONFLICT);
+      exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
