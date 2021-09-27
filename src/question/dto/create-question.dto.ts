@@ -1,7 +1,8 @@
 import { IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { QuestionMoodDto } from './question-mood.dto';
 
-export class CreateQuestionDto {
+export class CreateQuestionDto extends QuestionMoodDto {
   @ApiProperty({ description: '질문 내용' })
   @IsString()
   @Length(1, 150)

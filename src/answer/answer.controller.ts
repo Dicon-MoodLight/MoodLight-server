@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -25,6 +27,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
+import { UpdateAnswerDto } from './dto/update-answer.dto';
+import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -52,6 +56,13 @@ export class AnswerController {
       skip,
       take,
     });
+  }
+
+  @ApiOperation({ summary: '기분 별 답변 개수 가져오기' })
+  @ApiResponse({ status: 200, type: CountOfAnswerResponseDto, isArray: true })
+  @Get('count')
+  async getCountOfAnswers(): Promise<CountOfAnswerResponseDto[]> {
+    return await this.answerService.getCountOfAnswers();
   }
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
@@ -82,5 +93,33 @@ export class AnswerController {
       ...createAnswerDto,
       userId,
     });
+  }
+
+  @ApiOperation({ summary: '답변 수정하기' })
+  @ApiBody({ type: UpdateAnswerDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateAnswer(
+    @Req() req: any,
+    @Body() updateAnswerDto: UpdateAnswerDto,
+  ): Promise<StatusResponse> {
+    const { id: userId } = req.user;
+    return await this.answerService.updateAnswer({
+      ...updateAnswerDto,
+      userId,
+    });
+  }
+
+  @ApiOperation({ summary: '답변 삭제하기' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteAnswer(
+    @Req() req: any,
+    @Param('id') id: string,
+  ): Promise<StatusResponse> {
+    const { id: userId } = req.user;
+    return await this.answerService.deleteAnswer({ id, userId });
   }
 }

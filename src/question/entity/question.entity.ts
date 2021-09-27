@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Answer } from '../../answer/entity/answer.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Mood } from '../types/question';
 
 @Entity('questions')
 export class Question {
@@ -15,9 +16,9 @@ export class Question {
   @ApiProperty({ description: '질문 아이디' })
   id: string;
 
-  @Column({ type: 'boolean', nullable: false, default: true })
-  @ApiProperty({ description: '' })
-  selected: boolean;
+  @Column({ length: 5, nullable: false })
+  @ApiProperty({ description: '기분' })
+  mood: Mood;
 
   @Column({ length: 150, nullable: false })
   @ApiProperty({ description: '질문 텍스트' })

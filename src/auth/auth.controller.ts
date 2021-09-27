@@ -64,7 +64,10 @@ export class AuthController {
     return { accessToken };
   }
 
-  @ApiOperation({ summary: '비밀번호 변경' })
+  @ApiOperation({
+    summary: '비밀번호 변경',
+    description: '로그인 상태에서의 비밀번호 변경을 의미합니다.',
+  })
   @ApiBody({ type: ChangePasswordDto })
   @ApiResponse({ type: StatusResponseDto })
   @ApiBearerAuth()
