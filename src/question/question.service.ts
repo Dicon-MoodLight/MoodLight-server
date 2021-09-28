@@ -9,6 +9,7 @@ import { SUCCESS_RESPONSE } from '../constants/response';
 import { StatusResponse } from '../types/response';
 import { exceptionHandler } from '../util/error';
 import { Mood, moodList } from './types/question';
+import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 
 @Injectable()
 export class QuestionService {
@@ -23,7 +24,7 @@ export class QuestionService {
         activated_date: (activated
           ? moment().subtract(1, 'day')
           : moment()
-        ).format('YYYY-MM-DD'),
+        ).format(QUESTION_ACTIVATED_DATE_FORMAT),
       };
       const id = (
         await this.questionRepository.findOne({
@@ -62,14 +63,17 @@ export class QuestionService {
     return await this.questionRepository.findOne({ id });
   }
 
-  async findQuestionByMood(mood: Mood): Promise<Question> {
-    return await this.questionRepository.findOne({ mood, activated: true });
-  }
-
-  async findQuestionsByActivatedDate(activated_date): Promise<Question[]> {
+  async findQuestions(
+    activated_date: string,
+    mood: Mood = null,
+  ): Promise<Question[]> {
     return await this.questionRepository.find({
-      activated_date,
+      activated_date:
+        activated_date === 'today'
+          ? moment().format(QUESTION_ACTIVATED_DATE_FORMAT)
+          : activated_date,
       activated: true,
+      ...(mood ? { mood } : {}),
     });
   }
 
@@ -83,6 +87,15 @@ export class QuestionService {
         questions.push(newQuestion);
       }
       await this.questionRepository.save(questions);
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async deleteQuestion(id: string): Promise<StatusResponse> {
+    try {
+      await this.questionRepository.delete(id);
     } catch (err) {
       exceptionHandler(err);
     }

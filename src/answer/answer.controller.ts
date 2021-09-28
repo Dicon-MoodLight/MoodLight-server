@@ -98,6 +98,7 @@ export class AnswerController {
   @ApiOperation({ summary: '답변 수정하기' })
   @ApiBody({ type: UpdateAnswerDto })
   @ApiBearerAuth()
+  @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateAnswer(
@@ -113,6 +114,7 @@ export class AnswerController {
 
   @ApiOperation({ summary: '답변 삭제하기' })
   @ApiBearerAuth()
+  @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteAnswer(
