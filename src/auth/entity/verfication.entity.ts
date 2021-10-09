@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,7 +10,7 @@ import {
 type IVerificationMode = 'join' | 'change_password';
 
 @Entity('verifications')
-export class Verification {
+export class Verification extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
