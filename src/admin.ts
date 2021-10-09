@@ -10,6 +10,7 @@ import { ENV_PATH } from './constants/env';
 import { Question } from './question/entity/question.entity';
 import { Answer } from './answer/entity/answer.entity';
 import { Comment } from './comment/entity/comment.entity';
+import { Verification } from './auth/entity/verfication.entity';
 
 (async function runAdmin() {
   dotenv.config({ path: ENV_PATH });
@@ -20,7 +21,7 @@ import { Comment } from './comment/entity/comment.entity';
   await AdminBro.registerAdapter({ Database, Resource });
 
   const adminBro = new AdminBro({
-    resources: [User, Question, Answer, Comment],
+    resources: [User, Question, Answer, Comment, Verification],
     rootPath: '/',
   });
   const router = (AdminBroExpress as any).buildRouter(adminBro);
