@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Mood } from '../types/question';
 
 @Entity('questions')
-export class Question {
+export class Question extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty({ description: '질문 아이디' })
   id: string;

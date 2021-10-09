@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,7 +12,7 @@ import { Answer } from '../../answer/entity/answer.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('comments')
-export class Comment {
+export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   @ApiProperty({ description: '댓글 아이디' })
   id: number;

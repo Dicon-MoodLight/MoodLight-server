@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToMany,
+  BaseEntity,
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';
@@ -14,7 +15,7 @@ import { Comment } from '../../comment/entity/comment.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('answers')
-export class Answer {
+export class Answer extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   @ApiProperty({ description: '답변 아이디' })
   id: number;

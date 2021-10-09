@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AnswerModule } from './answer/answer.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CommentModule } from './comment/comment.module';
+import { ENV_PATH } from './constants/env';
 
 @Module({
   imports: [
@@ -20,15 +21,7 @@ import { CommentModule } from './comment/comment.module';
     MorganModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
-        `env/${
-          process.env.NODE_ENV === 'development'
-            ? 'dev'
-            : process.env.NODE_ENV === 'test'
-            ? 'test'
-            : 'prod'
-        }.env`,
-      ],
+      envFilePath: [ENV_PATH],
     }),
     DatabaseConfigModule,
     AnswerModule,
