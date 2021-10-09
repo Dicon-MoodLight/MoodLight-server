@@ -7,6 +7,8 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { AnswerService } from '../answer/answer.service';
 import { exceptionHandler } from '../util/error';
+import { IDeleteRequest } from '../types/delete';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 interface IFindComments {
   readonly answerId: string;
@@ -53,6 +55,31 @@ export class CommentService {
         answer: { id: answerId },
       });
       await this.commentRepository.save(comment);
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async updateComment({
+    commentId,
+    userId,
+    contents,
+  }: UpdateCommentDto): Promise<StatusResponse> {
+    try {
+      await this.commentRepository.update(
+        { id: commentId, user: { id: userId } },
+        { contents },
+      );
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async deleteComment({ userId, id }: IDeleteRequest): Promise<StatusResponse> {
+    try {
+      await this.commentRepository.delete({ id, user: { id: userId } });
     } catch (err) {
       exceptionHandler(err);
     }

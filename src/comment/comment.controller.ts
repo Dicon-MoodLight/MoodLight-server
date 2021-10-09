@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -23,6 +26,7 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @ApiTags('Comment')
 @Controller('comment')
@@ -63,5 +67,34 @@ export class CommentController {
       ...createCommentDto,
       userId,
     });
+  }
+
+  @ApiOperation({ summary: '댓글 수정하기' })
+  @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
+  @ApiBody({ type: UpdateCommentDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateComment(
+    @Req() req: any,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ): Promise<StatusResponse> {
+    const { id: userId } = req.user;
+    return await this.commentService.updateComment({
+      ...updateCommentDto,
+      userId,
+    });
+  }
+
+  @ApiOperation({ summary: '댓글 삭제하기' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteComment(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<StatusResponse> {
+    const { id: userId } = req.user;
+    return await this.commentService.deleteComment({ id, userId });
   }
 }

@@ -10,6 +10,7 @@ import { exceptionHandler } from '../util/error';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { moodList } from '../question/types/question';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
+import { IDeleteRequest } from '../types/delete';
 
 interface IFindAnswers {
   readonly questionId: string;
@@ -26,12 +27,14 @@ export class AnswerService {
     private readonly questionService: QuestionService,
   ) {}
 
-  async getCountOfAnswers(): Promise<CountOfAnswerResponseDto[]> {
+  async getCountOfAnswers(
+    activated_date: string,
+  ): Promise<CountOfAnswerResponseDto[]> {
     const countOfAnswers = [];
     await Promise.all(
       moodList.map((mood) => async () => {
         const count = await this.answerRepository.count({
-          question: { mood, activated: true },
+          question: { mood, activated_date },
         });
         countOfAnswers.push({ mood, count });
       }),
@@ -95,7 +98,7 @@ export class AnswerService {
     return SUCCESS_RESPONSE;
   }
 
-  async deleteAnswer({ id, userId }): Promise<StatusResponse> {
+  async deleteAnswer({ id, userId }: IDeleteRequest): Promise<StatusResponse> {
     try {
       await this.answerRepository.delete({ id, user: { id: userId } });
     } catch (err) {

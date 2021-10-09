@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseIntPipe,
   Post,
   Put,
   Query,
@@ -29,6 +29,8 @@ import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
+import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
+import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -39,7 +41,37 @@ export class AnswerController {
     private readonly answerService: AnswerService,
   ) {}
 
-  @ApiOperation({ summary: '답변 리스트 가져오기 (최신순)' })
+  @ApiOperation({ summary: '기분별 답변 개수 가져오기' })
+  @ApiResponse({ status: 200, type: CountOfAnswerResponseDto, isArray: true })
+  @ApiImplicitParam({
+    name: 'activated_date',
+    required: true,
+    description: `활성화 날짜 (${QUESTION_ACTIVATED_DATE_FORMAT})`,
+  })
+  @Get('count/:activated_date')
+  async getCountOfAnswers(
+    @Param('activated_date') activated_date: string,
+  ): Promise<CountOfAnswerResponseDto[]> {
+    return await this.answerService.getCountOfAnswers(activated_date);
+  }
+
+  @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
+  @ApiResponse({ status: 200, type: Answer, isArray: true })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('my')
+  async findMyAnswers(@Req() req: any): Promise<Answer[]> {
+    const { id } = req.user;
+    return await this.answerRepository.find({
+      where: { user: { id } },
+      order: { id: 'DESC' },
+    });
+  }
+
+  @ApiOperation({
+    summary: '답변 리스트 가져오기 (최신순)',
+    description: '다른 사용자의 답변도 포함됩니다.',
+  })
   @ApiResponse({ status: 200, type: Answer, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -55,26 +87,6 @@ export class AnswerController {
       userId,
       skip,
       take,
-    });
-  }
-
-  @ApiOperation({ summary: '기분 별 답변 개수 가져오기' })
-  @ApiResponse({ status: 200, type: CountOfAnswerResponseDto, isArray: true })
-  @Get('count')
-  async getCountOfAnswers(): Promise<CountOfAnswerResponseDto[]> {
-    return await this.answerService.getCountOfAnswers();
-  }
-
-  @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
-  @ApiResponse({ status: 200, type: Answer, isArray: true })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Get('my')
-  async findMyAnswers(@Req() req: any): Promise<Answer[]> {
-    const { id } = req.user;
-    return await this.answerRepository.find({
-      where: { user: { id } },
-      order: { id: 'DESC' },
     });
   }
 
@@ -119,7 +131,7 @@ export class AnswerController {
   @Delete(':id')
   async deleteAnswer(
     @Req() req: any,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<StatusResponse> {
     const { id: userId } = req.user;
     return await this.answerService.deleteAnswer({ id, userId });
