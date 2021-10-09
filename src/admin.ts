@@ -22,7 +22,7 @@ import { Verification } from './auth/entity/verfication.entity';
 
   const adminBro = new AdminBro({
     resources: [User, Question, Answer, Comment, Verification],
-    rootPath: '/admin',
+    rootPath: '/',
   });
   const router = (AdminBroExpress as any).buildRouter(adminBro);
 
