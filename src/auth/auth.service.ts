@@ -89,7 +89,7 @@ export class AuthService {
     if (
       (await nicknameIsExist) ||
       (await emailIsExist) ||
-      (await verificationIsExist)?.email
+      (await verificationIsExist)
     ) {
       return emailIsExist ? 'Email' : 'Nickname';
     }

@@ -15,6 +15,8 @@ export const exceptionMessageList = [
   'Question is not activated.',
   'Answer is private.',
   'error',
+  'Email already exists.',
+  'Nickname already exists.',
 ] as const;
 
 export type ExceptionMessage = typeof exceptionMessageList[number];
