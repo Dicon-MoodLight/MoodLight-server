@@ -54,6 +54,7 @@ export class QuestionController {
     @Query('date') activated_date: string,
     @Query('mood') mood?: Mood,
   ): Promise<Question[]> {
+    console.log(activated_date);
     return await this.questionService.findQuestions(activated_date, mood);
   }
 

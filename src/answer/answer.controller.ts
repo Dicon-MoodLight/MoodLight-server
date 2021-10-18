@@ -3,7 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseIntPipe,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -31,6 +32,7 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
+import { QuestionIdDto } from '../question/dto/question-id.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -75,10 +77,10 @@ export class AnswerController {
   @ApiResponse({ status: 200, type: Answer, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get(':questionId')
   async findAnswers(
     @Req() req: any,
-    @Param('questionId') questionId: string,
+    @Param() { questionId }: QuestionIdDto,
     @Query() { skip, take }: FindListDto,
   ): Promise<Answer[]> {
     const { id: userId } = req.user;
@@ -128,12 +130,12 @@ export class AnswerController {
   @ApiBearerAuth()
   @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
+  @Delete(':answerId')
   async deleteAnswer(
     @Req() req: any,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('answerId', ParseIntPipe) answerId: number,
   ): Promise<StatusResponse> {
     const { id: userId } = req.user;
-    return await this.answerService.deleteAnswer({ id, userId });
+    return await this.answerService.deleteAnswer({ id: answerId, userId });
   }
 }

@@ -23,6 +23,7 @@ import { ExistResponse, StatusResponse } from '../types/response';
 import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { StatusResponseDto } from '../constants/response';
+import { UserIdDto } from './dto/user-id.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -45,7 +46,7 @@ export class UserController {
   @ApiOperation({ summary: '사용자 정보 가져오기' })
   @ApiResponse({ status: 200, type: User })
   @Get(':id')
-  async findUserById(@Param() id: string): Promise<User> {
+  async findUserById(@Param() { id }: UserIdDto): Promise<User> {
     return await this.userService.findUserById(id);
   }
 

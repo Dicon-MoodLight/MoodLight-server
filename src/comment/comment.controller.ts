@@ -37,10 +37,10 @@ export class CommentController {
   @ApiResponse({ status: 200, type: Comment, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get(':answerId')
   async findComments(
     @Req() req: any,
-    @Param('answerId') answerId: string,
+    @Param('answerId', ParseIntPipe) answerId: number,
     @Query() { skip, take }: FindListDto,
   ): Promise<Comment[]> {
     const { id: userId } = req.user;

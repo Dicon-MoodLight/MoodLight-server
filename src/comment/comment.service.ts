@@ -11,7 +11,7 @@ import { IDeleteRequest } from '../types/delete';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 interface IFindComments {
-  readonly answerId: string;
+  readonly answerId: number;
   readonly userId: any;
   readonly skip: number;
   readonly take: number;
