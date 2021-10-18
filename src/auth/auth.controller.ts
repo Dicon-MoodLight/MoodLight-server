@@ -11,7 +11,7 @@ import {
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { StatusResponse } from '../types/response';
-import { StatusResponseDto, SUCCESS_RESPONSE } from '../constants/response';
+import { StatusResponseDto } from '../constants/response';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { ILoginResponse } from './interface/response';
 import { JoinDto } from './dto/join.dto';
@@ -20,19 +20,20 @@ import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-passwo
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserEmailDto } from '../user/dto/user-email.dto';
+import { User } from '../user/entity/user.entity';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: '인증 토큰 검증' })
-  @ApiResponse({ type: StatusResponseDto })
+  @ApiOperation({ summary: '자신의 사용자 정보 가져오기' })
+  @ApiResponse({ type: User })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  async authorization(): Promise<StatusResponse> {
-    return SUCCESS_RESPONSE;
+  async authorization(@Req() req: any): Promise<StatusResponse> {
+    return req.user;
   }
 
   @ApiOperation({ summary: '가입 요청' })
