@@ -5,7 +5,7 @@ import { User } from './user/entity/user.entity';
 import { Answer } from './answer/entity/answer.entity';
 import { Question } from './question/entity/question.entity';
 import { Comment } from './comment/entity/comment.entity';
-import { Verification } from './auth/entity/verfication.entity';
+import { Verification } from './auth/entity/verification.entity';
 
 @Module({
   imports: [

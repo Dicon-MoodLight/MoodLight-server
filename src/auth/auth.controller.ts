@@ -32,7 +32,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  async authorization(@Req() req: any): Promise<StatusResponse> {
+  async authorization(@Req() req: any): Promise<User> {
     return req.user;
   }
 

@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { User } from './entity/user.entity';
-import { Verification } from '../auth/entity/verfication.entity';
+import { Verification } from '../auth/entity/verification.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Verification])],

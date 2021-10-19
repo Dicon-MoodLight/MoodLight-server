@@ -14,7 +14,7 @@ import { SUCCESS_RESPONSE } from '../constants/response';
 import { exceptionHandler } from '../util/error';
 import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
-import { Verification } from './entity/verfication.entity';
+import { Verification } from './entity/verification.entity';
 import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UNAUTHORIZED_EXCEPTION } from '../constants/exception';

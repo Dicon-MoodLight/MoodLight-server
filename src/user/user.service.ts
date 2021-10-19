@@ -5,7 +5,7 @@ import { User } from './entity/user.entity';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Verification } from '../auth/entity/verfication.entity';
+import { Verification } from '../auth/entity/verification.entity';
 import { exceptionHandler } from '../util/error';
 
 @Injectable()

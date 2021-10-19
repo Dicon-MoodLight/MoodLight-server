@@ -9,7 +9,7 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { Verification } from './entity/verfication.entity';
+import { Verification } from './entity/verification.entity';
 
 @Module({
   imports: [
