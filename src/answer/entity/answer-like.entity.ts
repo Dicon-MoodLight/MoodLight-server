@@ -9,17 +9,17 @@ import {
 import { Answer } from './answer.entity';
 import { User } from '../../user/entity/user.entity';
 
-@Entity('likeAnswer')
-export class LikeAnswer extends BaseEntity {
+@Entity('AnswerLike')
+export class AnswerLike extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @ManyToOne(() => Answer, (answer: Answer) => answer.likes, {
+  @ManyToOne(() => Answer, (answer: Answer) => answer.answerLikes, {
     onDelete: 'CASCADE',
   })
   answer: Answer;
 
-  @ManyToOne(() => User, (user: User) => user.likeAnswers, {
+  @ManyToOne(() => User, (user: User) => user.answerLikes, {
     onDelete: 'CASCADE',
   })
   user: User;

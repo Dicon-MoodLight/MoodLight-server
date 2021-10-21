@@ -4,13 +4,9 @@ import * as dotenv from 'dotenv';
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { User } from './user/entity/user.entity';
 import { Database, Resource } from '@admin-bro/typeorm';
 import { ENV_PATH } from './constants/env';
-import { Question } from './question/entity/question.entity';
-import { Answer } from './answer/entity/answer.entity';
-import { Comment } from './comment/entity/comment.entity';
-import { Verification } from './auth/entity/verification.entity';
+import { entities } from './constants/entity';
 
 (async function runAdmin() {
   dotenv.config({ path: ENV_PATH });
@@ -21,7 +17,7 @@ import { Verification } from './auth/entity/verification.entity';
   await AdminBro.registerAdapter({ Database, Resource });
 
   const adminBro = new AdminBro({
-    resources: [User, Question, Answer, Comment, Verification],
+    resources: entities,
     rootPath: '/',
   });
   const router = (AdminBroExpress as any).buildRouter(adminBro);

@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseBoolPipe,
   ParseIntPipe,
   Post,
   Put,
@@ -33,6 +33,7 @@ import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { QuestionIdDto } from '../question/dto/question-id.dto';
+import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -92,6 +93,28 @@ export class AnswerController {
     });
   }
 
+  @ApiOperation({ summary: '답변 좋아요 처리' })
+  @ApiBody({ type: AddAnswerLikeDto })
+  @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
+  @ApiImplicitParam({
+    name: 'isLike',
+    required: true,
+    description: `추가는 true, 취소는 false`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('/like/:isLike')
+  async processAnswerLike(
+    @Req() req: any,
+    @Body() { answerId }: AddAnswerLikeDto,
+    @Param('isLike', ParseBoolPipe) isLike: boolean,
+  ): Promise<StatusResponse> {
+    const { id: userId } = req.user;
+    if (isLike)
+      return await this.answerService.addAnswerLike({ userId, answerId });
+    return await this.answerService.removeAnswerLike({ userId, answerId });
+  }
+
   @ApiOperation({ summary: '답변 생성하기' })
   @ApiBody({ type: CreateAnswerDto })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
@@ -130,6 +153,11 @@ export class AnswerController {
   @ApiBearerAuth()
   @ApiResponse({ type: StatusResponseDto })
   @UseGuards(JwtAuthGuard)
+  @ApiImplicitParam({
+    name: 'answerId',
+    required: true,
+    description: '답변 id',
+  })
   @Delete(':answerId')
   async deleteAnswer(
     @Req() req: any,

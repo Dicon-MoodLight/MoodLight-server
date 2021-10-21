@@ -4,5 +4,5 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UserIdDto {
   @ApiProperty({ description: '사용자 아이디' })
   @IsUUID()
-  readonly id: string;
+  readonly userId: string;
 }

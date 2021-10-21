@@ -13,7 +13,7 @@ import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';
 import { Comment } from '../../comment/entity/comment.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { LikeAnswer } from './like-answer.entity';
+import { AnswerLike } from './answer-like.entity';
 
 @Entity('answers')
 export class Answer extends BaseEntity {
@@ -45,15 +45,18 @@ export class Answer extends BaseEntity {
   })
   comments: Comment[];
 
-  @OneToMany(() => LikeAnswer, (likeAnswer: LikeAnswer) => likeAnswer.answer, {
+  @Column({ type: 'int', nullable: false, default: 0 })
+  likes: number;
+
+  @OneToMany(() => AnswerLike, (answerLike: AnswerLike) => answerLike.answer, {
     cascade: true,
   })
-  likes: LikeAnswer[];
+  answerLikes: AnswerLike[];
 
-  @CreateDateColumn({ nullable: false })
+  @CreateDateColumn({ name: 'created_date', nullable: false })
   @ApiProperty({ description: '생성일' })
-  created_date: Date;
+  createdDate: Date;
 
-  @UpdateDateColumn({ nullable: false, select: false })
-  updated_date: Date;
+  @UpdateDateColumn({ name: 'updated_date', nullable: false, select: false })
+  updatedDate: Date;
 }

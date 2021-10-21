@@ -45,11 +45,11 @@ export class UserService {
   }
 
   async updateUser({
-    id,
+    userId,
     ...updateUserDto
   }: UpdateUserDto): Promise<StatusResponse> {
     try {
-      await this.userRepository.update(id, updateUserDto);
+      await this.userRepository.update(userId, updateUserDto);
     } catch (err) {
       exceptionHandler(err);
     }

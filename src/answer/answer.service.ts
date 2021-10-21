@@ -11,6 +11,8 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { moodList } from '../question/types/question';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { IDeleteRequest } from '../types/delete';
+import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
+import { AnswerLike } from './entity/answer-like.entity';
 
 interface IFindAnswers {
   readonly questionId: string;
@@ -24,6 +26,8 @@ export class AnswerService {
   constructor(
     @InjectRepository(Answer)
     private readonly answerRepository: Repository<Answer>,
+    @InjectRepository(AnswerLike)
+    private readonly answerLikeRepository: Repository<AnswerLike>,
     private readonly questionService: QuestionService,
   ) {}
 
@@ -58,6 +62,44 @@ export class AnswerService {
       skip,
       take,
     });
+  }
+
+  async addAnswerLike({
+    userId,
+    answerId,
+  }: AddAnswerLikeDto): Promise<StatusResponse> {
+    try {
+      const { likes } = await this.findAnswerById(answerId);
+      await Promise.all([
+        this.answerLikeRepository.create({
+          user: { id: userId },
+          answer: { id: answerId },
+        }),
+        this.answerRepository.update(answerId, { likes: likes + 1 }),
+      ]);
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async removeAnswerLike({
+    userId,
+    answerId,
+  }: AddAnswerLikeDto): Promise<StatusResponse> {
+    try {
+      const { likes } = await this.findAnswerById(answerId);
+      await Promise.all([
+        this.answerLikeRepository.delete({
+          user: { id: userId },
+          answer: { id: answerId },
+        }),
+        this.answerRepository.update(answerId, { likes: likes - 1 }),
+      ]);
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
   }
 
   async createAnswer({

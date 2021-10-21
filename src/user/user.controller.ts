@@ -45,9 +45,9 @@ export class UserController {
 
   @ApiOperation({ summary: '다른 사용자 정보 가져오기' })
   @ApiResponse({ status: 200, type: User })
-  @Get(':id')
-  async findUserById(@Param() { id }: UserIdDto): Promise<User> {
-    return await this.userService.findUserById(id);
+  @Get(':userId')
+  async findUserById(@Param() { userId }: UserIdDto): Promise<User> {
+    return await this.userService.findUserById(userId);
   }
 
   @ApiOperation({ summary: '사용자 정보 업데이트' })

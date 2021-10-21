@@ -10,7 +10,7 @@ import {
 import { Answer } from '../../answer/entity/answer.entity';
 import { Comment } from '../../comment/entity/comment.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { LikeAnswer } from '../../answer/entity/like-answer.entity';
+import { AnswerLike } from '../../answer/entity/answer-like.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -40,10 +40,10 @@ export class User extends BaseEntity {
   })
   comments: Comment[];
 
-  @OneToMany(() => LikeAnswer, (likeAnswer: LikeAnswer) => likeAnswer.user, {
+  @OneToMany(() => AnswerLike, (answerLike: AnswerLike) => answerLike.user, {
     cascade: true,
   })
-  likeAnswers: LikeAnswer[];
+  answerLikes: AnswerLike[];
 
   @Column({ type: 'boolean', nullable: false, default: false })
   @ApiProperty({ description: '관리자 여부' })

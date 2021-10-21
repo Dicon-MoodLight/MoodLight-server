@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { User } from './user/entity/user.entity';
-import { Answer } from './answer/entity/answer.entity';
-import { Question } from './question/entity/question.entity';
-import { Comment } from './comment/entity/comment.entity';
-import { Verification } from './auth/entity/verification.entity';
+import { entities } from './constants/entity';
 
 @Module({
   imports: [
@@ -17,8 +13,9 @@ import { Verification } from './auth/entity/verification.entity';
         password: config.get<string>('DB_PASSWORD'),
         host: config.get<string>('DB_HOST'),
         autoLoadEntities: true,
-        entities: [User, Answer, Question, Comment, Verification],
+        entities,
         synchronize: true,
+        migrationsRun: true,
         type: 'mysql',
         charset: 'utf8_general_ci',
       }),
