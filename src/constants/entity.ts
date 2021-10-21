@@ -7,9 +7,9 @@ import { AnswerLike } from '../answer/entity/answer-like.entity';
 
 export const entities = [
   User,
+  AnswerLike,
   Answer,
   Question,
   Comment,
   Verification,
-  AnswerLike,
 ];

@@ -78,15 +78,13 @@ export class QuestionService {
   }
 
   async createQuestion(
-    createQuestionDto: CreateQuestionDto[],
+    createQuestionDto: CreateQuestionDto,
   ): Promise<StatusResponse> {
     try {
-      const questions = [];
-      for (const questionDto of createQuestionDto) {
-        const newQuestion = await this.questionRepository.create(questionDto);
-        questions.push(newQuestion);
-      }
-      await this.questionRepository.save(questions);
+      const newQuestion = await this.questionRepository.create(
+        createQuestionDto,
+      );
+      await this.questionRepository.save(newQuestion);
     } catch (err) {
       exceptionHandler(err);
     }

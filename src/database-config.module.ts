@@ -14,15 +14,12 @@ import { entities } from './constants/entity';
         host: config.get<string>('DB_HOST'),
         autoLoadEntities: true,
         entities,
-        synchronize: true,
-        migrationsRun: true,
+        synchronize: false,
         type: 'mysql',
         charset: 'utf8_general_ci',
       }),
       inject: [ConfigService],
     }),
   ],
-  controllers: [],
-  providers: [],
 })
 export class DatabaseConfigModule {}

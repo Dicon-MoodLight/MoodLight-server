@@ -63,13 +63,13 @@ export class QuestionController {
       '질문을 등록하면 매일 자정에 등록된 순서대로 오늘의 질문이 변경됩니다.',
   })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
-  @ApiBody({ type: CreateQuestionDto, isArray: true })
+  @ApiBody({ type: CreateQuestionDto })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createQuestion(
     @Req() req: any,
-    @Body() createQuestionDto: CreateQuestionDto[],
+    @Body() createQuestionDto: CreateQuestionDto,
   ): Promise<StatusResponse> {
     const { is_admin } = req.user;
     if (!is_admin) {
