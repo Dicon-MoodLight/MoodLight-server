@@ -29,9 +29,14 @@ export class Question extends BaseEntity {
   @ApiProperty({ description: '오늘의 질문 채택 여부' })
   activated: boolean;
 
-  @Column({ length: '8', nullable: true, select: false })
+  @Column({
+    name: 'activated_date',
+    length: '8',
+    nullable: true,
+    select: false,
+  })
   @ApiProperty({ description: '오늘의 질문 채택 날짜' })
-  activated_date: string;
+  activatedDate: string;
 
   @OneToMany(() => Answer, (answer: Answer) => answer.question, {
     cascade: true,

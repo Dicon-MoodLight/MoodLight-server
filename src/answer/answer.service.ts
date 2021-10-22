@@ -32,17 +32,15 @@ export class AnswerService {
   ) {}
 
   async getCountOfAnswers(
-    activated_date: string,
+    activatedDate: string,
   ): Promise<CountOfAnswerResponseDto[]> {
     const countOfAnswers = [];
-    await Promise.all(
-      moodList.map((mood) => async () => {
-        const count = await this.answerRepository.count({
-          question: { mood, activated_date },
-        });
-        countOfAnswers.push({ mood, count });
-      }),
-    );
+    moodList.map((mood) => async () => {
+      const count = await this.answerRepository.count({
+        question: { mood, activatedDate },
+      });
+      countOfAnswers.push({ mood, count });
+    });
     return countOfAnswers;
   }
 

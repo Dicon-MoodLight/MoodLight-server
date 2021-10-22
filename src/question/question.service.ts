@@ -8,8 +8,9 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { StatusResponse } from '../types/response';
 import { exceptionHandler } from '../util/error';
-import { Mood, moodList } from './types/question';
+import { Mood } from './types/question';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Injectable()
 export class QuestionService {
@@ -18,44 +19,44 @@ export class QuestionService {
     private questionRepository: Repository<Question>,
   ) {}
 
-  private updateQuestionTemplate(activated: boolean): (() => Promise<void>)[] {
-    return moodList.map((mood) => async () => {
-      const date = {
-        activated_date: (activated
-          ? moment().subtract(1, 'day')
-          : moment()
-        ).format(QUESTION_ACTIVATED_DATE_FORMAT),
-      };
-      const id = (
-        await this.questionRepository.findOne({
-          where: {
-            activated,
-            mood,
-            ...(activated ? date : {}),
-          },
-          select: ['id'],
-          ...(activated ? {} : { order: { id: 'DESC' } }),
-        })
-      )?.id;
-      if (id) {
-        await this.questionRepository.update(id, {
-          activated: !activated,
-          ...(activated ? {} : date),
-        });
-      }
+  async updateTodayQuestion(): Promise<void> {
+    const todayQuestions = await this.questionRepository.find({
+      activated: false,
+      activatedDate: moment().format(QUESTION_ACTIVATED_DATE_FORMAT),
     });
+    for (const { id } of todayQuestions) {
+      await this.questionRepository.update(id, {
+        activated: true,
+      });
+    }
+  }
+
+  async updateYesterdayQuestion(): Promise<void> {
+    const yesterdayQuestions = await this.questionRepository.find({
+      activated: true,
+      activatedDate: moment()
+        .subtract(1, 'day')
+        .subtract(1, 'day')
+        .format(QUESTION_ACTIVATED_DATE_FORMAT),
+    });
+    for (const { id } of yesterdayQuestions) {
+      await this.questionRepository.update(id, {
+        activated: false,
+      });
+    }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })
-  async updateTodayQuestion() {
+  async activateQuestion() {
     setTimeout(async () => {
       await Promise.all([
-        ...this.updateQuestionTemplate(true),
-        ...this.updateQuestionTemplate(false),
-      ]);
-      console.log(
-        `[${moment().format('YYYY-MM-DD HH:MM:SS')}] Question updated...`,
-      );
+        this.updateTodayQuestion,
+        this.updateYesterdayQuestion,
+      ]).then(() => {
+        console.log(
+          `[${moment().format('YYYY-MM-DD HH:MM:SS')}] Question updated...`,
+        );
+      });
     }, 1000);
   }
 
@@ -68,7 +69,7 @@ export class QuestionService {
     mood: Mood = null,
   ): Promise<Question[]> {
     return await this.questionRepository.find({
-      activated_date:
+      activatedDate:
         activated_date === 'today'
           ? moment().format(QUESTION_ACTIVATED_DATE_FORMAT)
           : activated_date,
@@ -85,6 +86,18 @@ export class QuestionService {
         createQuestionDto,
       );
       await this.questionRepository.save(newQuestion);
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
+  async updateQuestion({
+    questionId,
+    ...updateQuestionDto
+  }: UpdateQuestionDto): Promise<StatusResponse> {
+    try {
+      await this.questionRepository.update(questionId, updateQuestionDto);
     } catch (err) {
       exceptionHandler(err);
     }

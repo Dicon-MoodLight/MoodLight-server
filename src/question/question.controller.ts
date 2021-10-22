@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -28,6 +29,7 @@ import { Mood, moodList } from './types/question';
 import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { QuestionIdDto } from './dto/question-id.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @ApiTags('Question')
 @Controller('question')
@@ -51,16 +53,16 @@ export class QuestionController {
   })
   @Get()
   async findQuestions(
-    @Query('date') activated_date: string,
+    @Query('date') activatedDate: string,
     @Query('mood') mood?: Mood,
   ): Promise<Question[]> {
-    return await this.questionService.findQuestions(activated_date, mood);
+    return await this.questionService.findQuestions(activatedDate, mood);
   }
 
   @ApiOperation({
     summary: '질문 등록하기',
     description:
-      '질문을 등록하면 매일 자정에 등록된 순서대로 오늘의 질문이 변경됩니다.',
+      '질문을 등록하면 지정한 활성화 날짜에 오늘의 질문로 활성화됩니다.',
   })
   @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
   @ApiBody({ type: CreateQuestionDto })
@@ -76,6 +78,23 @@ export class QuestionController {
       throw NOT_ADMIN_EXCEPTION;
     }
     return await this.questionService.createQuestion(createQuestionDto);
+  }
+
+  @ApiOperation({ summary: '질문 수정하기' })
+  @ApiBearerAuth()
+  @ApiResponse({ type: StatusResponseDto })
+  @ApiBody({ type: UpdateQuestionDto })
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateQuestion(
+    @Req() req: any,
+    @Body() updateQuestionDto: UpdateQuestionDto,
+  ): Promise<StatusResponse> {
+    const { is_admin } = req.user;
+    if (!is_admin) {
+      throw NOT_ADMIN_EXCEPTION;
+    }
+    return await this.questionService.updateQuestion(updateQuestionDto);
   }
 
   @ApiOperation({ summary: '질문 삭제하기' })
