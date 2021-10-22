@@ -25,15 +25,14 @@ export class Question extends BaseEntity {
   @ApiProperty({ description: '질문 텍스트' })
   contents: string;
 
-  @Column({ type: 'boolean', nullable: false, default: false, select: false })
+  @Column({ type: 'boolean', nullable: false, default: false })
   @ApiProperty({ description: '오늘의 질문 채택 여부' })
   activated: boolean;
 
   @Column({
     name: 'activated_date',
-    length: '8',
-    nullable: true,
-    select: false,
+    length: 10,
+    nullable: false,
   })
   @ApiProperty({ description: '오늘의 질문 채택 날짜' })
   activatedDate: string;
@@ -43,9 +42,9 @@ export class Question extends BaseEntity {
   })
   answers: Answer[];
 
-  @CreateDateColumn({ name: 'createdDate', nullable: false, select: false })
-  created_date: Date;
+  @CreateDateColumn({ name: 'created_date', nullable: false, select: false })
+  createdDate: Date;
 
-  @UpdateDateColumn({ name: 'updatedDate', nullable: false, select: false })
-  updated_date: Date;
+  @UpdateDateColumn({ name: 'updated_date', nullable: false, select: false })
+  updatedDate: Date;
 }
