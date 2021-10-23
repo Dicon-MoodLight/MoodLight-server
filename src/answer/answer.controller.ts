@@ -3,7 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseBoolPipe,
+  Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Put,
@@ -24,7 +25,7 @@ import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { StatusResponse } from '../types/response';
-import { Repository } from 'typeorm';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
@@ -34,6 +35,7 @@ import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-p
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { QuestionIdDto } from '../question/dto/question-id.dto';
 import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
+import { AnswerIncludesQuestionDto } from '../question/dto/answer-includes-question.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -47,27 +49,28 @@ export class AnswerController {
   @ApiOperation({ summary: '기분별 답변 개수 가져오기' })
   @ApiResponse({ status: 200, type: CountOfAnswerResponseDto, isArray: true })
   @ApiImplicitParam({
-    name: 'activated_date',
+    name: 'activatedDate',
     required: true,
     description: `활성화 날짜 (${QUESTION_ACTIVATED_DATE_FORMAT})`,
   })
-  @Get('count/:activated_date')
+  @Get('count/:activatedDate')
   async getCountOfAnswers(
-    @Param('activated_date') activated_date: string,
+    @Param('activatedDate') activatedDate: string,
   ): Promise<CountOfAnswerResponseDto[]> {
-    return await this.answerService.getCountOfAnswers(activated_date);
+    return await this.answerService.getCountOfAnswers(activatedDate);
   }
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
-  @ApiResponse({ status: 200, type: Answer, isArray: true })
+  @ApiResponse({ status: 200, type: AnswerIncludesQuestionDto, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('my')
-  async findMyAnswers(@Req() req: any): Promise<Answer[]> {
+  async findMyAnswers(@Req() req: any): Promise<AnswerIncludesQuestionDto[]> {
     const { id } = req.user;
     return await this.answerRepository.find({
       where: { user: { id } },
       order: { id: 'DESC' },
+      relations: ['question'],
     });
   }
 

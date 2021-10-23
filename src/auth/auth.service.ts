@@ -37,13 +37,6 @@ export class AuthService {
     adminKey,
   }: JoinDto): Promise<StatusResponse> {
     try {
-      const joinDataAvailability = await this.checkJoinDataAvailability({
-        email,
-        nickname,
-      });
-      if (joinDataAvailability !== 'available') {
-        throw `${joinDataAvailability} already exists.`;
-      }
       const emailHasVerification = await this.verificationRepository.findOne({
         email,
         mode: 'join',
@@ -65,6 +58,13 @@ export class AuthService {
           verificationDto,
         );
       } else {
+        const joinDataAvailability = await this.checkJoinDataAvailability({
+          email,
+          nickname,
+        });
+        if (joinDataAvailability !== 'available') {
+          throw `${joinDataAvailability} already exists.`;
+        }
         const newVerification = await this.verificationRepository.create(
           verificationDto,
         );

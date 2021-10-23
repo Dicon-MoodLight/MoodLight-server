@@ -14,7 +14,6 @@ import { entities } from './constants/entity';
         host: config.get<string>('DB_HOST'),
         autoLoadEntities: true,
         entities,
-        synchronize: false,
         type: 'mysql',
         charset: 'utf8_general_ci',
       }),

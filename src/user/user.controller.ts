@@ -25,6 +25,7 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { StatusResponseDto } from '../constants/response';
 import { UserIdDto } from './dto/user-id.dto';
 import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
+import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
 
 @ApiTags('User')
 @Controller('user')
