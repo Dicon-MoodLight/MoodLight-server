@@ -147,7 +147,7 @@ export class AuthService {
       if (!isMatch) {
         throw UNAUTHORIZED_EXCEPTION;
       }
-      await this.userRepository.update(id, { password: newPassword });
+      await this.updateUserPassword(id, newPassword);
     } catch (err) {
       exceptionHandler(err);
     }
