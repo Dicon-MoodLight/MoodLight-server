@@ -193,16 +193,16 @@ export class AuthService {
       if (!verification) {
         throw 'Verification does not exists.';
       }
-      await this.updateUserPassword(email, password);
+      await this.updateUserPassword({ email }, password);
     } catch (err) {
       exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
   }
 
-  private async updateUserPassword(email, plainPassword): Promise<void> {
+  private async updateUserPassword(find, plainPassword): Promise<void> {
     const password = await AuthService.encryptPassword(plainPassword);
-    await this.userRepository.update({ email }, { password });
+    await this.userRepository.update(find, { password });
   }
 
   createJwtAccessToken({ id, email }): string {
