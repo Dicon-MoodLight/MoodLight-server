@@ -16,16 +16,14 @@ export class UserService {
     private verificationRepository: Repository<Verification>,
   ) {}
 
-  async getUserNicknameIsExist(
-    nickname: string,
-    email: string = undefined,
-  ): Promise<boolean> {
-    const nicknameIsExist = await this.verificationRepository.findOne({
+  async getUserNicknameIsExist(nickname: string): Promise<boolean> {
+    const nicknameOfVerificationIsExist = this.verificationRepository.findOne({
       nickname,
     });
-    return !!(await this.findUserByNickname(nickname)) || email
-      ? nicknameIsExist.email !== email
-      : false;
+    const nicknameOfUserIsExist = this.findUserByNickname(nickname);
+    return !!(
+      (await nicknameOfVerificationIsExist) || (await nicknameOfUserIsExist)
+    );
   }
 
   async findUserById(id: string): Promise<User> {

@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Req,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,10 +21,10 @@ import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ExistResponse, StatusResponse } from '../types/response';
-import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { StatusResponseDto } from '../constants/response';
 import { UserIdDto } from './dto/user-id.dto';
+import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -36,10 +37,15 @@ export class UserController {
   async getUserIsExist(
     @Query() { email, nickname }: GetUserIsExistDto,
   ): Promise<ExistResponse> {
+    if (!email && !nickname) throw ConflictException;
     return {
-      exist: nickname
-        ? await this.userService.getUserNicknameIsExist(email, nickname)
-        : !!(await this.userService.findUserByEmail(email)),
+      exist:
+        email && nickname
+          ? ((await this.userService.findUserByEmail(email))?.id ?? 0) ===
+            ((await this.userService.findUserByNickname(nickname))?.id ?? 1)
+          : email
+          ? !!(await this.userService.findUserByEmail(email))
+          : !!(await this.userService.findUserByNickname(nickname)),
     };
   }
 
