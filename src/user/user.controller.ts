@@ -45,7 +45,7 @@ export class UserController {
             ((await this.userService.findUserByNickname(nickname))?.id ?? 1)
           : email
           ? !!(await this.userService.findUserByEmail(email))
-          : !!(await this.userService.findUserByNickname(nickname)),
+          : !!(await this.userService.getUserNicknameIsExist(nickname)),
     };
   }
 
