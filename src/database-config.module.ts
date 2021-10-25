@@ -12,7 +12,6 @@ import { entities } from './constants/entity';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         host: config.get<string>('DB_HOST'),
-        autoLoadEntities: true,
         entities,
         type: 'mysql',
         charset: 'utf8_general_ci',
