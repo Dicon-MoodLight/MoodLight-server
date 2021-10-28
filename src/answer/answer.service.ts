@@ -20,10 +20,10 @@ import {
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
 
 interface IFindAnswers {
-  readonly questionId: string;
   readonly userId: any;
   readonly skip: number;
   readonly take: number;
+  readonly questionId?: string;
 }
 
 @Injectable()
@@ -74,13 +74,12 @@ export class AnswerService {
   }
 
   async findMyAnswers({
-    questionId,
     userId,
     skip,
     take,
   }: IFindAnswers): Promise<AnswerIncludesQuestionDto[]> {
     return await this.answerRepository.find({
-      where: { question: { id: questionId }, user: { id: userId } },
+      where: { user: { id: userId } },
       order: { id: 'DESC' },
       relations: ['question'],
       skip,
@@ -95,7 +94,7 @@ export class AnswerService {
     take,
   }: IFindAnswers): Promise<Answer[]> {
     return await this.answerRepository.find({
-      where: { question: questionId, private: false },
+      where: { question: { id: questionId }, private: false },
       order: { user: userId, id: 'DESC' },
       skip,
       take,

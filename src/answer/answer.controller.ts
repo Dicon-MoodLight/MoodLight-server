@@ -74,12 +74,10 @@ export class AnswerController {
   @Get('my')
   async findMyAnswers(
     @Req() req: any,
-    @Param() { questionId }: QuestionIdDto,
     @Query() { skip, take }: FindListDto,
   ): Promise<AnswerIncludeIsLikeAndQuestionDto[]> {
     const { id: userId } = req.user;
     const answers = await this.answerService.findMyAnswers({
-      questionId,
       userId,
       skip,
       take,
