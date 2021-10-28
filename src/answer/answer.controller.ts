@@ -35,7 +35,6 @@ import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-p
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { QuestionIdDto } from '../question/dto/question-id.dto';
 import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
-import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
 import {
   AnswerIncludeIsLikeAndQuestionDto,
   AnswerIncludeIsLikeDto,
@@ -65,7 +64,11 @@ export class AnswerController {
   }
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
-  @ApiResponse({ status: 200, type: AnswerIncludesQuestionDto, isArray: true })
+  @ApiResponse({
+    status: 200,
+    type: AnswerIncludeIsLikeAndQuestionDto,
+    isArray: true,
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('my')
@@ -90,7 +93,7 @@ export class AnswerController {
     summary: '답변 리스트 가져오기 (최신순)',
     description: '다른 사용자의 답변도 포함됩니다.',
   })
-  @ApiResponse({ status: 200, type: Answer, isArray: true })
+  @ApiResponse({ status: 200, type: AnswerIncludeIsLikeDto, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':questionId')
