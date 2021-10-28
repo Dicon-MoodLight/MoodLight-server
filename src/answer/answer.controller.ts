@@ -107,6 +107,7 @@ export class AnswerController {
       skip,
       take,
     });
+    console.log(answers);
     return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeDto>(
       { answers, userId },
     );

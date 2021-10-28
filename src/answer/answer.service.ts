@@ -46,13 +46,13 @@ export class AnswerService {
     userId: string;
   }): Promise<T[]> {
     const newAnswers: T[] = [];
-    answers.map(async (answer) => {
+    for (const answer of answers) {
       const isLike = !!(await this.findAnswerLikeByUserIdAndAnswerId({
         userId,
         answerId: answer.id,
       }));
-      newAnswers.push({ isLike, ...answer });
-    });
+      newAnswers.push({ isLike, ...answer } as T);
+    }
     return newAnswers;
   }
 
@@ -60,12 +60,12 @@ export class AnswerService {
     activatedDate: string,
   ): Promise<CountOfAnswerResponseDto[]> {
     const countOfAnswers: CountOfAnswerResponseDto[] = [];
-    moodList.map(async (mood) => {
+    for (const mood of moodList) {
       const count = await this.answerRepository.count({
         question: { mood, activatedDate },
       });
       countOfAnswers.push({ mood, count });
-    });
+    }
     return countOfAnswers;
   }
 
