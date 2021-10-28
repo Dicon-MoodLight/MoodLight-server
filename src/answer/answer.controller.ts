@@ -35,7 +35,11 @@ import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-p
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { QuestionIdDto } from '../question/dto/question-id.dto';
 import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
-import { AnswerIncludesQuestionDto } from '../question/dto/answer-includes-question.dto';
+import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
+import {
+  AnswerIncludeIsLikeAndQuestionDto,
+  AnswerIncludeIsLikeDto,
+} from './dto/answer-include-is-like.dto';
 
 @ApiTags('Answer')
 @Controller('answer')
@@ -65,13 +69,21 @@ export class AnswerController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('my')
-  async findMyAnswers(@Req() req: any): Promise<AnswerIncludesQuestionDto[]> {
-    const { id } = req.user;
-    return await this.answerRepository.find({
-      where: { user: { id } },
-      order: { id: 'DESC' },
-      relations: ['question'],
+  async findMyAnswers(
+    @Req() req: any,
+    @Param() { questionId }: QuestionIdDto,
+    @Query() { skip, take }: FindListDto,
+  ): Promise<AnswerIncludeIsLikeAndQuestionDto[]> {
+    const { id: userId } = req.user;
+    const answers = await this.answerService.findMyAnswers({
+      questionId,
+      userId,
+      skip,
+      take,
     });
+    return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeAndQuestionDto>(
+      { answers, userId },
+    );
   }
 
   @ApiOperation({
@@ -86,14 +98,17 @@ export class AnswerController {
     @Req() req: any,
     @Param() { questionId }: QuestionIdDto,
     @Query() { skip, take }: FindListDto,
-  ): Promise<Answer[]> {
+  ): Promise<AnswerIncludeIsLikeDto[]> {
     const { id: userId } = req.user;
-    return await this.answerService.findAnswers({
+    const answers = await this.answerService.findAnswers({
       questionId,
       userId,
       skip,
       take,
     });
+    return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeDto>(
+      { answers, userId },
+    );
   }
 
   @ApiOperation({ summary: '답변 좋아요 처리' })

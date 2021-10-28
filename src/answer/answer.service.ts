@@ -13,6 +13,11 @@ import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { IDeleteRequest } from '../types/delete';
 import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
 import { AnswerLike } from './entity/answer-like.entity';
+import {
+  AnswerIncludeIsLikeAndQuestionDto,
+  AnswerIncludeIsLikeDto,
+} from './dto/answer-include-is-like.dto';
+import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
 
 interface IFindAnswers {
   readonly questionId: string;
@@ -31,11 +36,31 @@ export class AnswerService {
     private readonly questionService: QuestionService,
   ) {}
 
+  async answersIncludeIsLikePipeline<
+    T extends AnswerIncludeIsLikeDto | AnswerIncludeIsLikeAndQuestionDto,
+  >({
+    answers,
+    userId,
+  }: {
+    answers: AnswerIncludesQuestionDto[] | Answer[];
+    userId: string;
+  }): Promise<T[]> {
+    const newAnswers: T[] = [];
+    answers.map(async (answer) => {
+      const isLike = !!(await this.findAnswerLikeByUserIdAndAnswerId({
+        userId,
+        answerId: answer.id,
+      }));
+      newAnswers.push({ isLike, ...answer });
+    });
+    return newAnswers;
+  }
+
   async getCountOfAnswers(
     activatedDate: string,
   ): Promise<CountOfAnswerResponseDto[]> {
-    const countOfAnswers = [];
-    moodList.map((mood) => async () => {
+    const countOfAnswers: CountOfAnswerResponseDto[] = [];
+    moodList.map(async (mood) => {
       const count = await this.answerRepository.count({
         question: { mood, activatedDate },
       });
@@ -46,6 +71,21 @@ export class AnswerService {
 
   async findAnswerById(id: number): Promise<Answer> {
     return await this.answerRepository.findOne({ id });
+  }
+
+  async findMyAnswers({
+    questionId,
+    userId,
+    skip,
+    take,
+  }: IFindAnswers): Promise<AnswerIncludesQuestionDto[]> {
+    return await this.answerRepository.find({
+      where: { question: { id: questionId }, user: { id: userId } },
+      order: { id: 'DESC' },
+      relations: ['question'],
+      skip,
+      take,
+    });
   }
 
   async findAnswers({
@@ -59,6 +99,19 @@ export class AnswerService {
       order: { user: userId, id: 'DESC' },
       skip,
       take,
+    });
+  }
+
+  async findAnswerLikeByUserIdAndAnswerId({
+    userId,
+    answerId,
+  }: {
+    userId: string;
+    answerId: number;
+  }): Promise<AnswerLike> {
+    return await this.answerLikeRepository.findOne({
+      user: { id: userId },
+      answer: { id: answerId },
     });
   }
 

@@ -1,5 +1,5 @@
-import { Answer } from '../../answer/entity/answer.entity';
-import { Question } from '../entity/question.entity';
+import { Answer } from '../entity/answer.entity';
+import { Question } from '../../question/entity/question.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AnswerIncludesQuestionDto extends Answer {
