@@ -25,7 +25,7 @@ import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { StatusResponse } from '../types/response';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
