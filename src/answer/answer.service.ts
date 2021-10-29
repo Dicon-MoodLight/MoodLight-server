@@ -120,12 +120,13 @@ export class AnswerService {
       userId,
       answerId,
     }));
-    if (answerLikeIsExist) throw DEFAULT_EXCEPTION;
-    const newAnswerLike = await this.answerLikeRepository.create({
-      user: { id: userId },
-      answer: { id: answerId },
-    });
-    await this.answerLikeRepository.save(newAnswerLike);
+    if (!answerLikeIsExist) {
+      const newAnswerLike = await this.answerLikeRepository.create({
+        user: { id: userId },
+        answer: { id: answerId },
+      });
+      await this.answerLikeRepository.save(newAnswerLike);
+    }
   }
 
   async addAnswerLike({
