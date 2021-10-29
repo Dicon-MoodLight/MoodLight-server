@@ -18,6 +18,7 @@ import {
   AnswerIncludeIsLikeDto,
 } from './dto/answer-include-is-like.dto';
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
+import { DEFAULT_EXCEPTION } from '../constants/exception';
 
 interface IFindAnswers {
   readonly userId: any;
@@ -114,6 +115,19 @@ export class AnswerService {
     });
   }
 
+  private async createAnswerLike({ userId, answerId }): Promise<void> {
+    const answerLikeIsExist = !!(await this.findAnswerLikeByUserIdAndAnswerId({
+      userId,
+      answerId,
+    }));
+    if (answerLikeIsExist) throw DEFAULT_EXCEPTION;
+    const newAnswerLike = await this.answerLikeRepository.create({
+      user: { id: userId },
+      answer: { id: answerId },
+    });
+    await this.answerLikeRepository.save(newAnswerLike);
+  }
+
   async addAnswerLike({
     userId,
     answerId,
@@ -121,10 +135,7 @@ export class AnswerService {
     try {
       const { likes } = await this.findAnswerById(answerId);
       await Promise.all([
-        this.answerLikeRepository.create({
-          user: { id: userId },
-          answer: { id: answerId },
-        }),
+        this.createAnswerLike({ userId, answerId }),
         this.answerRepository.update(answerId, { likes: likes + 1 }),
       ]);
     } catch (err) {
