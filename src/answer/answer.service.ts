@@ -115,17 +115,11 @@ export class AnswerService {
   }
 
   private async createAnswerLike({ userId, answerId }): Promise<void> {
-    const answerLikeIsExist = !!(await this.findAnswerLikeByUserIdAndAnswerId({
-      userId,
-      answerId,
-    }));
-    if (!answerLikeIsExist) {
-      const newAnswerLike = await this.answerLikeRepository.create({
-        user: { id: userId },
-        answer: { id: answerId },
-      });
-      await this.answerLikeRepository.save(newAnswerLike);
-    }
+    const newAnswerLike = await this.answerLikeRepository.create({
+      user: { id: userId },
+      answer: { id: answerId },
+    });
+    await this.answerLikeRepository.save(newAnswerLike);
   }
 
   async addAnswerLike({
@@ -134,10 +128,18 @@ export class AnswerService {
   }: AddAnswerLikeDto): Promise<StatusResponse> {
     try {
       const { likes } = await this.findAnswerById(answerId);
-      await Promise.all([
-        this.createAnswerLike({ userId, answerId }),
-        this.answerRepository.update(answerId, { likes: likes + 1 }),
-      ]);
+      const answerLikeIsExist = !!(await this.findAnswerLikeByUserIdAndAnswerId(
+        {
+          userId,
+          answerId,
+        },
+      ));
+      if (answerLikeIsExist) {
+        await Promise.all([
+          this.createAnswerLike({ userId, answerId }),
+          this.answerRepository.update(answerId, { likes: likes + 1 }),
+        ]);
+      }
     } catch (err) {
       exceptionHandler(err);
     }
