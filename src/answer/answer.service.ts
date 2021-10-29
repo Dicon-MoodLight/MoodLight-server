@@ -18,7 +18,6 @@ import {
   AnswerIncludeIsLikeDto,
 } from './dto/answer-include-is-like.dto';
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
-import { DEFAULT_EXCEPTION } from '../constants/exception';
 
 interface IFindAnswers {
   readonly userId: any;
