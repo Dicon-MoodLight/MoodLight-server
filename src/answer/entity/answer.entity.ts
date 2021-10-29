@@ -45,6 +45,10 @@ export class Answer extends BaseEntity {
   })
   comments: Comment[];
 
+  @Column({ type: 'int', nullable: false, default: 0 })
+  @ApiProperty({ description: '댓글 갯수' })
+  countOfComment: number;
+
   @ApiProperty({ description: '좋아요 갯수' })
   @Column({ type: 'int', nullable: false, default: 0 })
   likes: number;

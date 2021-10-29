@@ -9,6 +9,7 @@ import { AnswerService } from '../answer/answer.service';
 import { exceptionHandler } from '../util/error';
 import { IDeleteRequest } from '../types/delete';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Answer } from '../answer/entity/answer.entity';
 
 interface IFindComments {
   readonly answerId: number;
@@ -22,6 +23,8 @@ export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @InjectRepository(Answer)
+    private readonly answerRepository: Repository<Answer>,
     private readonly answerService: AnswerService,
   ) {}
 
@@ -55,6 +58,12 @@ export class CommentService {
         answer: { id: answerId },
       });
       await this.commentRepository.save(comment);
+      await this.answerRepository.update(
+        {
+          id: answerId,
+        },
+        { countOfComment: answer.countOfComment + 1 },
+      );
     } catch (err) {
       exceptionHandler(err);
     }
