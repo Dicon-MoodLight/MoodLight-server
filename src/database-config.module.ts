@@ -13,6 +13,7 @@ import { entities } from './constants/entity';
         password: config.get<string>('DB_PASSWORD'),
         host: config.get<string>('DB_HOST'),
         entities,
+        synchronize: true,
         type: 'mysql',
         charset: 'utf8_general_ci',
       }),
