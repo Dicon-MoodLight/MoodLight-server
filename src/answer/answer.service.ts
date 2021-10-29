@@ -134,7 +134,7 @@ export class AnswerService {
           answerId,
         },
       ));
-      if (answerLikeIsExist) {
+      if (!answerLikeIsExist) {
         await Promise.all([
           this.createAnswerLike({ userId, answerId }),
           this.answerRepository.update(answerId, { likes: likes + 1 }),
