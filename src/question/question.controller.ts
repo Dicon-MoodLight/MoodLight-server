@@ -38,7 +38,8 @@ export class QuestionController {
 
   @ApiOperation({
     summary: '질문 가져오기',
-    description: '오늘의 질문들을 가져오려면 date 에 today 를 대신 입력하세요.',
+    description:
+      '오늘의 질문들을 가져오려면 date 에 today 를 대신 입력하세요.\n\n쿼리를 모두 비우면 전체 질문 리스트를 전송합니다.',
   })
   @ApiResponse({ status: 200, type: Question, isArray: true })
   @ApiImplicitQuery({

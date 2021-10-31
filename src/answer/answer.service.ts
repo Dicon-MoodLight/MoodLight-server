@@ -73,6 +73,10 @@ export class AnswerService {
     return await this.answerRepository.findOne({ id });
   }
 
+  async findAllMyAnswers(userId): Promise<AnswerIncludesQuestionDto[]> {
+    return await this.answerRepository.find({ user: { id: userId } });
+  }
+
   async findMyAnswers({
     userId,
     skip,

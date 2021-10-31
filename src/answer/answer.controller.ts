@@ -63,6 +63,25 @@ export class AnswerController {
     return await this.answerService.getCountOfAnswers(activatedDate);
   }
 
+  @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (전체)' })
+  @ApiResponse({
+    status: 200,
+    type: AnswerIncludeIsLikeAndQuestionDto,
+    isArray: true,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('my/all')
+  async findAllMyAnswers(
+    @Req() req: any,
+  ): Promise<AnswerIncludeIsLikeAndQuestionDto[]> {
+    const { id: userId } = req.user;
+    const answers = await this.answerService.findAllMyAnswers(userId);
+    return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeAndQuestionDto>(
+      { answers, userId },
+    );
+  }
+
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
   @ApiResponse({
     status: 200,
