@@ -9,7 +9,7 @@ import {
 import { Answer } from './answer.entity';
 import { User } from '../../user/entity/user.entity';
 
-@Entity('AnswerLike')
+@Entity('answer_likes')
 export class AnswerLike extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;

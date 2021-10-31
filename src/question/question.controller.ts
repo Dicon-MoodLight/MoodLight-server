@@ -43,7 +43,7 @@ export class QuestionController {
   @ApiResponse({ status: 200, type: Question, isArray: true })
   @ApiImplicitQuery({
     name: 'date',
-    required: true,
+    required: false,
     description: `활성화 날짜 (${QUESTION_ACTIVATED_DATE_FORMAT})`,
   })
   @ApiImplicitQuery({
@@ -53,9 +53,11 @@ export class QuestionController {
   })
   @Get()
   async findQuestions(
-    @Query('date') activatedDate: string,
+    @Query('date') activatedDate?: string,
     @Query('mood') mood?: Mood,
   ): Promise<Question[]> {
+    if (!activatedDate && !mood)
+      return await this.questionService.getAllQuestions();
     return await this.questionService.findQuestions(activatedDate, mood);
   }
 

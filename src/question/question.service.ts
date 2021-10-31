@@ -60,6 +60,10 @@ export class QuestionService {
     }, 1000);
   }
 
+  async getAllQuestions(): Promise<Question[]> {
+    return await this.questionRepository.find();
+  }
+
   async findQuestionById(id: string): Promise<Question> {
     return await this.questionRepository.findOne({ id });
   }
