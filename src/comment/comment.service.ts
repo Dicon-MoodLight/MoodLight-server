@@ -42,6 +42,10 @@ export class CommentService {
     });
   }
 
+  async getCountByAnswerId(id: number) {
+    return await this.commentRepository.count({ answer: { id } });
+  }
+
   async createComment({
     contents,
     answerId,

@@ -27,6 +27,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { FindListDto } from '../util/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CountDto } from '../util/dto/count.dto';
 
 @ApiTags('Comment')
 @Controller('comment')
@@ -50,6 +51,15 @@ export class CommentController {
       skip,
       take,
     });
+  }
+
+  @ApiOperation({ summary: '댓글 갯수 가져오기' })
+  @Get('count/:answerId')
+  async getCount(
+    @Param('answerId', ParseIntPipe) answerId: number,
+  ): Promise<CountDto> {
+    const count = await this.commentService.getCountByAnswerId(answerId);
+    return { count };
   }
 
   @ApiOperation({ summary: '댓글 생성하기' })
