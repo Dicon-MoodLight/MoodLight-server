@@ -75,7 +75,11 @@ export class AnswerService {
   }
 
   async findAllMyAnswers(userId): Promise<AnswerIncludesQuestionDto[]> {
-    return await this.answerRepository.find({ user: { id: userId } });
+    return await this.answerRepository.find({
+      where: { user: { id: userId } },
+      order: { id: 'DESC' },
+      relations: ['question'],
+    });
   }
 
   async findMyAnswers({

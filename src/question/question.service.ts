@@ -61,7 +61,7 @@ export class QuestionService {
   }
 
   async getAllQuestions(): Promise<Question[]> {
-    return await this.questionRepository.find();
+    return await this.questionRepository.find({ activated: true });
   }
 
   async findQuestionById(id: string): Promise<Question> {
