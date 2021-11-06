@@ -61,7 +61,13 @@ export class QuestionService {
   }
 
   async getAllQuestions(): Promise<Question[]> {
-    return await this.questionRepository.find({ activated: true });
+    const questions = await this.questionRepository.find({ activated: true });
+    questions.sort(
+      (first, second) =>
+        +(first.activatedDate < second.activatedDate) -
+        +(first.activatedDate > second.activatedDate),
+    );
+    return questions;
   }
 
   async findQuestionById(id: string): Promise<Question> {
