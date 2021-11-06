@@ -84,11 +84,10 @@ export class AnswerService {
     take,
   }: IFindAnswers): Promise<AnswerIncludesQuestionDto[]> {
     return await this.answerRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, ...LIST_PAGINATION_OPTION(start) },
       order: { id: 'DESC' },
       relations: ['question'],
       take,
-      ...LIST_PAGINATION_OPTION(start),
     });
   }
 
@@ -99,10 +98,13 @@ export class AnswerService {
     take,
   }: IFindAnswers): Promise<Answer[]> {
     return await this.answerRepository.find({
-      where: { question: { id: questionId }, private: false },
+      where: {
+        question: { id: questionId },
+        private: false,
+        ...LIST_PAGINATION_OPTION(start),
+      },
       order: { user: userId, id: 'DESC' },
       take,
-      ...LIST_PAGINATION_OPTION(start),
     });
   }
 

@@ -36,10 +36,9 @@ export class CommentService {
     take,
   }: IFindComments): Promise<Comment[]> {
     return await this.commentRepository.find({
-      where: { answer: { id: answerId } },
+      where: { answer: { id: answerId }, ...LIST_PAGINATION_OPTION(start) },
       order: { user: userId, id: 'DESC' },
       take,
-      ...LIST_PAGINATION_OPTION(start),
     });
   }
 
