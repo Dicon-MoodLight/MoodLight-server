@@ -42,13 +42,13 @@ export class CommentController {
   async findComments(
     @Req() req: any,
     @Param('answerId', ParseIntPipe) answerId: number,
-    @Query() { skip, take }: FindListDto,
+    @Query() { start, take }: FindListDto,
   ): Promise<Comment[]> {
     const { id: userId } = req.user;
     return await this.commentService.findComments({
       answerId,
       userId,
-      skip,
+      start,
       take,
     });
   }

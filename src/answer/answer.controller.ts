@@ -93,12 +93,12 @@ export class AnswerController {
   @Get('my')
   async findMyAnswers(
     @Req() req: any,
-    @Query() { skip, take }: FindListDto,
+    @Query() { start, take }: FindListDto,
   ): Promise<AnswerIncludeIsLikeAndQuestionDto[]> {
     const { id: userId } = req.user;
     const answers = await this.answerService.findMyAnswers({
       userId,
-      skip,
+      start,
       take,
     });
     return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeAndQuestionDto>(
@@ -117,13 +117,13 @@ export class AnswerController {
   async findAnswers(
     @Req() req: any,
     @Param() { questionId }: QuestionIdDto,
-    @Query() { skip, take }: FindListDto,
+    @Query() { start, take }: FindListDto,
   ): Promise<AnswerIncludeIsLikeDto[]> {
     const { id: userId } = req.user;
     const answers = await this.answerService.findAnswers({
       questionId,
       userId,
-      skip,
+      start,
       take,
     });
     return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeDto>(

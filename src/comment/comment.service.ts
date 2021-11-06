@@ -10,11 +10,12 @@ import { exceptionHandler } from '../util/error';
 import { IDeleteRequest } from '../types/delete';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Answer } from '../answer/entity/answer.entity';
+import { LIST_PAGINATION_OPTION } from '../util/list-pagination-option';
 
 interface IFindComments {
   readonly answerId: number;
   readonly userId: any;
-  readonly skip: number;
+  readonly start: number;
   readonly take: number;
 }
 
@@ -31,14 +32,14 @@ export class CommentService {
   async findComments({
     answerId,
     userId,
-    skip,
+    start,
     take,
   }: IFindComments): Promise<Comment[]> {
     return await this.commentRepository.find({
       where: { answer: { id: answerId } },
       order: { user: userId, id: 'DESC' },
-      skip,
       take,
+      ...LIST_PAGINATION_OPTION(start),
     });
   }
 

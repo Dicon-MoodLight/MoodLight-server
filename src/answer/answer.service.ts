@@ -18,10 +18,11 @@ import {
   AnswerIncludeIsLikeDto,
 } from './dto/answer-include-is-like.dto';
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
+import { LIST_PAGINATION_OPTION } from '../util/list-pagination-option';
 
 interface IFindAnswers {
   readonly userId: any;
-  readonly skip: number;
+  readonly start: number;
   readonly take: number;
   readonly questionId?: string;
 }
@@ -79,29 +80,29 @@ export class AnswerService {
 
   async findMyAnswers({
     userId,
-    skip,
+    start,
     take,
   }: IFindAnswers): Promise<AnswerIncludesQuestionDto[]> {
     return await this.answerRepository.find({
       where: { user: { id: userId } },
       order: { id: 'DESC' },
       relations: ['question'],
-      skip,
       take,
+      ...LIST_PAGINATION_OPTION(start),
     });
   }
 
   async findAnswers({
     questionId,
     userId,
-    skip,
+    start,
     take,
   }: IFindAnswers): Promise<Answer[]> {
     return await this.answerRepository.find({
       where: { question: { id: questionId }, private: false },
       order: { user: userId, id: 'DESC' },
-      skip,
       take,
+      ...LIST_PAGINATION_OPTION(start),
     });
   }
 
