@@ -6,7 +6,7 @@ export class FindListDto {
   @ApiProperty({ description: '리스트 마지막 원소 id / 첫 로딩에는 0' })
   @Type(() => Number)
   @IsNumber()
-  @Min(0)
+  @Min(-1)
   readonly start: number;
 
   @ApiProperty({ description: '가져올 리스트 원소 갯수' })
