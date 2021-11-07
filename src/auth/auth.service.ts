@@ -118,6 +118,18 @@ export class AuthService {
     return SUCCESS_RESPONSE;
   }
 
+  async checkConfirmCode(confirmDto: ConfirmDto): Promise<StatusResponse> {
+    try {
+      const verification = await this.verificationRepository.findOne(
+        confirmDto,
+      );
+      if (!verification) throw UNAUTHORIZED_EXCEPTION;
+    } catch (err) {
+      exceptionHandler(err);
+    }
+    return SUCCESS_RESPONSE;
+  }
+
   async login({ email, password: plain }: LoginDto): Promise<User> {
     try {
       const password = await this.findUserPassword({ email });

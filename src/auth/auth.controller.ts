@@ -52,6 +52,16 @@ export class AuthController {
     return await this.authService.confirm(confirmDto);
   }
 
+  @ApiOperation({ summary: '인증번호 확인' })
+  @ApiBody({ type: ConfirmDto })
+  @ApiResponse({ type: StatusResponseDto })
+  @Post('confirm-check')
+  async checkConfirmCode(
+    @Body() confirmDto: ConfirmDto,
+  ): Promise<StatusResponse> {
+    return await this.authService.checkConfirmCode(confirmDto);
+  }
+
   @ApiOperation({ summary: '로그인' })
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ description: '{ accessToken: string; }' })
