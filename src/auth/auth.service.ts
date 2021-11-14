@@ -42,6 +42,10 @@ export class AuthService {
     });
   }
 
+  private async deleteVerification({ email, mode }: IFindVerification) {
+    return await this.verificationRepository.delete({ email, mode });
+  }
+
   async join({
     email,
     password: plain,
@@ -124,6 +128,7 @@ export class AuthService {
         ...JSON.parse(user),
       });
       await this.userRepository.save(newUser);
+      await this.deleteVerification({ email, mode: 'join' });
     } catch (err) {
       exceptionHandler(err);
     }
@@ -228,6 +233,7 @@ export class AuthService {
         throw 'Verification does not exists.';
       }
       await this.updateUserPassword({ email }, password);
+      await this.deleteVerification({ email, mode: 'change_password' });
     } catch (err) {
       exceptionHandler(err);
     }
