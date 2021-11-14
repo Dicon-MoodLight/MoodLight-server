@@ -19,6 +19,11 @@ import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-passwo
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UNAUTHORIZED_EXCEPTION } from '../constants/exception';
 
+interface IFindVerification {
+  readonly email: string;
+  readonly mode: 'join' | 'change_password';
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -30,6 +35,13 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  private async findVerification({ email, mode }: IFindVerification) {
+    return await this.verificationRepository.findOne({
+      email,
+      mode,
+    });
+  }
+
   async join({
     email,
     password: plain,
@@ -37,7 +49,7 @@ export class AuthService {
     adminKey,
   }: JoinDto): Promise<StatusResponse> {
     try {
-      const emailHasVerification = await this.verificationRepository.findOne({
+      const emailHasVerification = await this.findVerification({
         email,
         mode: 'join',
       });
@@ -177,13 +189,23 @@ export class AuthService {
       if (!user) {
         throw 'User email does not exist.';
       }
-      const confirmCode = AuthService.createConfirmCode();
-      const newVerification = await this.verificationRepository.create({
+      const emailHasVerification = await this.findVerification({
         email,
-        confirmCode,
         mode: 'change_password',
       });
-      await this.verificationRepository.save(newVerification);
+      const confirmCode = AuthService.createConfirmCode();
+      if (emailHasVerification) {
+        await this.verificationRepository.update(emailHasVerification.id, {
+          confirmCode,
+        });
+      } else {
+        const newVerification = await this.verificationRepository.create({
+          email,
+          confirmCode,
+          mode: 'change_password',
+        });
+        await this.verificationRepository.save(newVerification);
+      }
       await this.sendConfirmEmail(email, confirmCode);
     } catch (err) {
       exceptionHandler(err);

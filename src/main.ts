@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { promises as fs } from 'fs';
 
 const PORT = process.env.PORT || 5000;
 
@@ -24,6 +25,10 @@ const PORT = process.env.PORT || 5000;
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);
+  await fs
+    .writeFile('./swagger-spec.json', JSON.stringify(document))
+    .then((res) => console.log('fdafd', res))
+    .catch((err) => console.log(err));
   SwaggerModule.setup('docs', app, document);
   app.useGlobalPipes(
     new ValidationPipe({
