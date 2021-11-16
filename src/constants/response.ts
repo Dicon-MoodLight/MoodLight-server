@@ -27,3 +27,9 @@ export class StatusResponseDto {
   @IsOptional()
   message: ExceptionMessage;
 }
+
+export class ExistResponseDto {
+  @ApiProperty({ description: '존재 여부' })
+  @IsBoolean()
+  exist: boolean;
+}

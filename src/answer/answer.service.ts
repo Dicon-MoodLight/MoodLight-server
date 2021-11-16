@@ -27,6 +27,11 @@ interface IFindAnswers {
   readonly questionId?: string;
 }
 
+interface IFindAnswerByUserIdAndActivatedDate {
+  readonly userId: string;
+  readonly activatedDate: string;
+}
+
 @Injectable()
 export class AnswerService {
   constructor(
@@ -63,7 +68,7 @@ export class AnswerService {
     const countOfAnswers: CountOfAnswerResponseDto[] = [];
     for (const mood of moodList) {
       const id = (
-        await this.questionService.findQuestions(activatedDate, mood)
+        await this.questionService.findQuestions({ activatedDate, mood })
       )[0]?.id;
       let count = 0;
       if (id) {
@@ -78,6 +83,16 @@ export class AnswerService {
 
   async findAnswerById(id: number): Promise<Answer> {
     return await this.answerRepository.findOne({ id });
+  }
+
+  async findAnswerByUserIdAndActivatedDate({
+    userId,
+    activatedDate,
+  }: IFindAnswerByUserIdAndActivatedDate): Promise<Answer> {
+    return await this.answerRepository.findOne({
+      user: { id: userId },
+      createdDate: activatedDate,
+    });
   }
 
   async findAllMyAnswers(userId): Promise<AnswerIncludesQuestionDto[]> {

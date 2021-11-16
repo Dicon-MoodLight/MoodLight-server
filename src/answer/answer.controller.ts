@@ -28,7 +28,7 @@ import { StatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
-import { StatusResponseDto } from '../constants/response';
+import { ExistResponseDto, StatusResponseDto } from '../constants/response';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
@@ -80,6 +80,27 @@ export class AnswerController {
     return await this.answerService.answersIncludeIsLikePipeline<AnswerIncludeIsLikeAndQuestionDto>(
       { answers, userId },
     );
+  }
+
+  @ApiOperation({ summary: '자신의 답변 여부 확인' })
+  @ApiResponse({
+    status: 200,
+    type: ExistResponseDto,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('my/exist/:activatedDate')
+  async getMyAnswerIsExist(
+    @Req() req: any,
+    @Param('activatedDate') activatedDate: string,
+  ): Promise<ExistResponseDto> {
+    const { id } = req.user;
+    return {
+      exist: !!(await this.answerService.findAnswerByUserIdAndActivatedDate({
+        userId: id,
+        activatedDate,
+      })),
+    };
   }
 
   @ApiOperation({ summary: '자신의 답변 리스트 가져오기 (최신순)' })
@@ -141,7 +162,7 @@ export class AnswerController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Put('/like/:isLike')
+  @Put('like/:isLike')
   async processAnswerLike(
     @Req() req: any,
     @Body() { answerId }: AddAnswerLikeDto,

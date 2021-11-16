@@ -12,6 +12,11 @@ import { Mood } from './types/question';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 
+interface IFindQuestions {
+  readonly activatedDate: string;
+  readonly mood?: Mood;
+}
+
 @Injectable()
 export class QuestionService {
   constructor(
@@ -74,15 +79,15 @@ export class QuestionService {
     return await this.questionRepository.findOne({ id });
   }
 
-  async findQuestions(
-    activated_date: string,
-    mood: Mood = null,
-  ): Promise<Question[]> {
+  async findQuestions({
+    activatedDate,
+    mood,
+  }: IFindQuestions): Promise<Question[]> {
     return await this.questionRepository.find({
       activatedDate:
-        activated_date === 'today'
+        activatedDate === 'today'
           ? moment().format(QUESTION_ACTIVATED_DATE_FORMAT)
-          : activated_date,
+          : activatedDate,
       activated: true,
       ...(mood ? { mood } : {}),
     });

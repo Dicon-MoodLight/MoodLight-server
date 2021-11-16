@@ -59,7 +59,7 @@ export class QuestionController {
   ): Promise<Question[]> {
     if (!activatedDate && !mood)
       return await this.questionService.getAllQuestions();
-    return await this.questionService.findQuestions(activatedDate, mood);
+    return await this.questionService.findQuestions({ activatedDate, mood });
   }
 
   @ApiOperation({
