@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
   BaseEntity,
+  JoinTable,
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';
@@ -38,6 +39,7 @@ export class Answer extends BaseEntity {
   @ManyToOne(() => Question, (question: Question) => question.answers, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'questionId' })
   question: Question;
 
   @OneToMany(() => Comment, (comment: Comment) => comment.answer, {

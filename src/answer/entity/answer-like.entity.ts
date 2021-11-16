@@ -2,6 +2,7 @@ import {
   BaseEntity,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -17,6 +18,7 @@ export class AnswerLike extends BaseEntity {
   @ManyToOne(() => Answer, (answer: Answer) => answer.answerLikes, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'answerId' })
   answer: Answer;
 
   @ManyToOne(() => User, (user: User) => user.answerLikes, {

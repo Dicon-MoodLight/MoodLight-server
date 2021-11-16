@@ -62,9 +62,15 @@ export class AnswerService {
   ): Promise<CountOfAnswerResponseDto[]> {
     const countOfAnswers: CountOfAnswerResponseDto[] = [];
     for (const mood of moodList) {
-      const count = await this.answerRepository.count({
-        question: { mood, activatedDate },
-      });
+      const id = (
+        await this.questionService.findQuestions(activatedDate, mood)
+      )[0]?.id;
+      let count = 0;
+      if (id) {
+        count = await this.answerRepository.count({
+          where: { question: { id } },
+        });
+      }
       countOfAnswers.push({ mood, count });
     }
     return countOfAnswers;
