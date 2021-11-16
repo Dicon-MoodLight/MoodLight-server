@@ -41,7 +41,6 @@ export class Question extends BaseEntity {
   @OneToMany(() => Answer, (answer: Answer) => answer.question, {
     cascade: true,
   })
-  @JoinTable()
   answers: Answer[];
 
   @CreateDateColumn({ name: 'created_date', nullable: false, select: false })

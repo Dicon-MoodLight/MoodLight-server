@@ -9,7 +9,7 @@ Server that supports REST API for the **Mood Light** mobile app.
 ## 🛠️ Installation
 
 ```bash
-$ npm install
+$ npm i
 ```
 
 <br/>
@@ -25,6 +25,18 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+<br/>
+
+## 🔑 Admin app
+
+```bash
+# development
+$ npm run start:admin:dev
+
+# production mode
+$ npm run start:admin:prod
 ```
 
 <br/>
