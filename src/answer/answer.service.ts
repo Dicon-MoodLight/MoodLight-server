@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { CreateAnswerDto } from './dto/create-answer.dto';
@@ -91,7 +91,10 @@ export class AnswerService {
   }: IFindAnswerByUserIdAndActivatedDate): Promise<Answer> {
     return await this.answerRepository.findOne({
       user: { id: userId },
-      createdDate: activatedDate,
+      createdDate: Between(
+        `${activatedDate} 00:00:00`,
+        `${activatedDate} 23:59:59`,
+      ),
     });
   }
 
