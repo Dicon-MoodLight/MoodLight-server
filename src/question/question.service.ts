@@ -97,9 +97,10 @@ export class QuestionService {
     createQuestionDto: CreateQuestionDto,
   ): Promise<StatusResponse> {
     try {
-      const newQuestion = await this.questionRepository.create(
-        createQuestionDto,
-      );
+      const newQuestion = await this.questionRepository.create({
+        ...createQuestionDto,
+        activated: true,
+      });
       await this.questionRepository.save(newQuestion);
     } catch (err) {
       exceptionHandler(err);

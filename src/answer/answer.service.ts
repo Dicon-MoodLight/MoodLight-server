@@ -19,6 +19,9 @@ import {
 } from './dto/answer-include-is-like.dto';
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
 import { LIST_PAGINATION_OPTION } from '../util/list-pagination-option';
+import * as moment from 'moment';
+import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
+import { DEFAULT_EXCEPTION } from '../constants/exception';
 
 interface IFindAnswers {
   readonly userId: any;
@@ -206,10 +209,15 @@ export class AnswerService {
     ...createAnswerDto
   }: CreateAnswerDto): Promise<StatusResponse> {
     try {
-      const question = await this.questionService.findQuestionById(questionId);
-      if (!question.activated) {
-        throw 'Question is not activated.';
-      }
+      const [existingAnswer, question] = await Promise.all([
+        this.findAnswerByUserIdAndActivatedDate({
+          userId,
+          activatedDate: moment().format(QUESTION_ACTIVATED_DATE_FORMAT),
+        }),
+        this.questionService.findQuestionById(questionId),
+      ]);
+      if (!question?.activated) throw 'Question is not activated.';
+      if (existingAnswer) throw DEFAULT_EXCEPTION;
       const answer = await this.answerRepository.create({
         ...createAnswerDto,
         user: { id: userId },

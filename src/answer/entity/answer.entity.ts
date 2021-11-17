@@ -8,7 +8,6 @@ import {
   JoinColumn,
   OneToMany,
   BaseEntity,
-  JoinTable,
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';

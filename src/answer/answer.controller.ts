@@ -24,7 +24,7 @@ import { AnswerService } from './answer.service';
 import { Answer } from './entity/answer.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create-answer.dto';
-import { StatusResponse } from '../types/response';
+import { ExistResponse, StatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindListDto } from '../util/dto/find-list.dto';
@@ -93,7 +93,7 @@ export class AnswerController {
   async getMyAnswerIsExist(
     @Req() req: any,
     @Param('activatedDate') activatedDate: string,
-  ): Promise<ExistResponseDto> {
+  ): Promise<ExistResponse> {
     const { id } = req.user;
     return {
       exist: !!(await this.answerService.findAnswerByUserIdAndActivatedDate({
