@@ -97,16 +97,15 @@ export class AuthService {
     email,
     nickname,
   }): Promise<'Email' | 'Nickname' | 'available'> {
-    const verificationIsExist = this.verificationRepository.findOne({
-      nickname,
-    });
-    const nicknameIsExist = this.userService.findUserByNickname(nickname);
-    const emailIsExist = this.userService.findUserByEmail(email);
-    if (
-      (await nicknameIsExist) ||
-      (await emailIsExist) ||
-      (await verificationIsExist)
-    ) {
+    const [verificationIsExist, nicknameIsExist, emailIsExist] =
+      await Promise.all([
+        this.verificationRepository.findOne({
+          nickname,
+        }),
+        this.userService.findUserByNickname(nickname),
+        this.userService.findUserByEmail(email),
+      ]);
+    if (nicknameIsExist || emailIsExist || verificationIsExist) {
       return emailIsExist ? 'Email' : 'Nickname';
     }
     return 'available';
