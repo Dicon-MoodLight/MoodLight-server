@@ -38,15 +38,15 @@ export class UserController {
     @Query() { email, nickname }: GetUserIsExistDto,
   ): Promise<ExistResponse> {
     if (!email && !nickname) throw ConflictException;
-    return {
-      exist:
-        email && nickname
-          ? ((await this.userService.findUserByEmail(email))?.id ?? 0) ===
-            ((await this.userService.findUserByNickname(nickname))?.id ?? 1)
-          : email
-          ? !!(await this.userService.findUserByEmail(email))
-          : !!(await this.userService.getUserNicknameIsExist(nickname)),
-    };
+    let exist: boolean;
+    const [existEmail, existNickname] = await Promise.all([
+      this.userService.findUserByEmail(email),
+      this.userService.findUserByNickname(nickname),
+    ]);
+    if (email && nickname) exist = (existEmail ?? 0) === (existNickname ?? 1);
+    else if (email) exist = !!existEmail;
+    else exist = !!existNickname;
+    return { exist };
   }
 
   @ApiOperation({ summary: '다른 사용자 정보 가져오기' })
