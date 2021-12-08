@@ -29,6 +29,10 @@ export class Answer extends BaseEntity {
   @ApiProperty({ description: '비공개 여부' })
   private: boolean;
 
+  @Column({ name: 'mood_level', type: 'int', nullable: false })
+  @ApiProperty({ description: '감정 수치' })
+  moodLevel: number;
+
   @ManyToOne(() => User, (user: User) => user.answers, {
     onDelete: 'CASCADE',
   })
