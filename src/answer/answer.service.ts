@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindOneOptions, Repository } from 'typeorm';
 import * as moment from 'moment';
-import firebaseAdmin, { messaging } from 'firebase-admin';
 import { Answer } from './entity/answer.entity';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
@@ -23,7 +22,6 @@ import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
 import { LIST_PAGINATION_OPTION } from '../utils/list-pagination-option';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { DEFAULT_EXCEPTION } from '../constants/exception';
-import Message = messaging.Message;
 import { requestFCM } from '../utils/fcm';
 
 interface IFindAnswers {

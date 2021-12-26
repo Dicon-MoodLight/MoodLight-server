@@ -14,13 +14,15 @@ import { StatusResponse } from '../types/response';
 import { StatusResponseDto } from '../constants/response';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { ILoginResponse } from './interface/response';
-import { JoinDto } from './dto/join.dto';
-import { ConfirmDto } from './dto/confirm.dto';
-import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import {
+  JoinDto,
+  ConfirmChangePasswordNotLoggedInDto,
+  ConfirmDto,
+  ChangePasswordDto,
+  SaveFirebaseTokenOfUserDto,
+} from './dto';
 import { UserEmailDto } from '../user/dto/user-email.dto';
 import { User } from '../user/entity/user.entity';
-import { SaveFirebaseTokenOfUserDto } from './dto/save-firebase-token-of-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')

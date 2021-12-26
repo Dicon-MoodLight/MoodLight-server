@@ -33,7 +33,7 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
 import { ApiImplicitParam } from '@nestjs/swagger/dist/decorators/api-implicit-param.decorator';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
-import { QuestionIdDto } from '../question/dto/question-id.dto';
+import { QuestionIdDto } from '../question/dto';
 import { AddAnswerLikeDto } from './dto/add-answer-like.dto';
 import {
   AnswerIncludeIsLikeAndQuestionDto,

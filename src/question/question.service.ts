@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from './entity/question.entity';
 import { Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { Question } from './entity/question.entity';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { StatusResponse } from '../types/response';
 import { exceptionHandler } from '../utils/error';
 import { Mood } from './types/question';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
-import { UpdateQuestionDto } from './dto/update-question.dto';
+import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 
 interface IFindQuestions {
   readonly activatedDate: string;

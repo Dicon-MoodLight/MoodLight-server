@@ -21,15 +21,13 @@ import {
 import { QuestionService } from './question.service';
 import { Question } from './entity/question.entity';
 import { StatusResponse } from '../types/response';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateQuestionDto, QuestionIdDto, UpdateQuestionDto } from './dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { StatusResponseDto } from '../constants/response';
 import { NOT_ADMIN_EXCEPTION } from '../constants/exception';
 import { Mood, moodList } from './types/question';
 import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
-import { QuestionIdDto } from './dto/question-id.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @ApiTags('Question')
 @Controller('question')

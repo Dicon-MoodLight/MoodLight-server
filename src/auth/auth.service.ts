@@ -5,18 +5,20 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
-import { LoginDto } from './dto/login.dto';
+import {
+  LoginDto,
+  JoinDto,
+  ConfirmDto,
+  ConfirmChangePasswordNotLoggedInDto,
+  ChangePasswordDto,
+} from './dto';
 import { User } from '../user/entity/user.entity';
 import { UserService } from '../user/user.service';
 import { StatusResponse } from '../types/response';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { exceptionHandler } from '../utils/error';
-import { JoinDto } from './dto/join.dto';
-import { ConfirmDto } from './dto/confirm.dto';
 import { Verification } from './entity/verification.entity';
-import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { UNAUTHORIZED_EXCEPTION } from '../constants/exception';
 
 interface IFindVerification {
