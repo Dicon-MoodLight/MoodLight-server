@@ -167,7 +167,11 @@ export class AuthService {
     userId: string,
     firebaseToken: string,
   ): Promise<void> {
-    await this.userRepository.update(userId, { firebaseToken });
+    try {
+      await this.userRepository.update(userId, { firebaseToken });
+    } catch (err) {
+      exceptionHandler(err);
+    }
   }
 
   async changePassword({

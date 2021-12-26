@@ -4,7 +4,7 @@ import {
   IntersectionType,
 } from '@nestjs/swagger';
 import { OptionalUserIdDto } from '../../user/dto/optional-user-id.dto';
-import { QuestionIdDto } from '../../question/dto/question-id.dto';
+import { QuestionIdDto } from '../../question/dto';
 import {
   IsBoolean,
   IsNotEmpty,

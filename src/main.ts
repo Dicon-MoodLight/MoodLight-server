@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
   const document = SwaggerModule.createDocument(app, options);
   await fs
     .writeFile('./swagger-spec.json', JSON.stringify(document))
-    .then((res) => console.log('fdafd', res))
+    .then((res) => console.log('created swagger file', res))
     .catch((err) => console.log(err));
   SwaggerModule.setup('docs', app, document);
   app.useGlobalPipes(

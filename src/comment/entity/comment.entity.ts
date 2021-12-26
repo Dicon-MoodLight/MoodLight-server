@@ -11,6 +11,7 @@ import {
 import { User } from '../../user/entity/user.entity';
 import { Answer } from '../../answer/entity/answer.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { COMMENT_CONTENTS_MAX_LENGTH } from '../../constants/length';
 
 @Entity('comments')
 export class Comment extends BaseEntity {
@@ -18,7 +19,10 @@ export class Comment extends BaseEntity {
   @ApiProperty({ description: '댓글 아이디' })
   id: number;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({
+    length: COMMENT_CONTENTS_MAX_LENGTH,
+    nullable: false,
+  })
   @ApiProperty({ description: '댓글 텍스트' })
   contents: string;
 

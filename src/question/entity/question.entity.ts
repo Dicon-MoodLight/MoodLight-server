@@ -10,6 +10,7 @@ import {
 import { Answer } from '../../answer/entity/answer.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Mood } from '../types/question';
+import { QUESTION_CONTENTS_MAX_LENGTH } from '../../constants/length';
 
 @Entity('questions')
 export class Question extends BaseEntity {
@@ -21,7 +22,7 @@ export class Question extends BaseEntity {
   @ApiProperty({ description: '기분' })
   mood: Mood;
 
-  @Column({ length: 150, nullable: false })
+  @Column({ length: QUESTION_CONTENTS_MAX_LENGTH, nullable: false })
   @ApiProperty({ description: '질문 텍스트' })
   contents: string;
 

@@ -1,5 +1,5 @@
 import { IsNumber } from 'class-validator';
-import { QuestionMoodDto } from '../../question/dto/question-mood.dto';
+import { QuestionMoodDto } from '../../question/dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CountOfAnswerResponseDto extends QuestionMoodDto {
