@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Between, FindOneOptions, Repository } from 'typeorm';
+import * as moment from 'moment';
+import firebaseAdmin, { messaging } from 'firebase-admin';
 import { Answer } from './entity/answer.entity';
-import { Between, Repository } from 'typeorm';
 import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { QuestionService } from '../question/question.service';
-import { exceptionHandler } from '../util/error';
+import { exceptionHandler } from '../utils/error';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { moodList } from '../question/types/question';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';
@@ -18,10 +20,11 @@ import {
   AnswerIncludeIsLikeDto,
 } from './dto/answer-include-is-like.dto';
 import { AnswerIncludesQuestionDto } from './dto/answer-includes-question.dto';
-import { LIST_PAGINATION_OPTION } from '../util/list-pagination-option';
-import * as moment from 'moment';
+import { LIST_PAGINATION_OPTION } from '../utils/list-pagination-option';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { DEFAULT_EXCEPTION } from '../constants/exception';
+import Message = messaging.Message;
+import { requestFCM } from '../utils/fcm';
 
 interface IFindAnswers {
   readonly userId: any;
@@ -84,8 +87,14 @@ export class AnswerService {
     return countOfAnswers;
   }
 
-  async findAnswerById(id: number): Promise<Answer> {
-    return await this.answerRepository.findOne({ id });
+  async findAnswerById(id: number, includeUser = false): Promise<Answer> {
+    let conditions: FindOneOptions<Answer> = {
+      where: { id },
+    };
+    if (includeUser) {
+      conditions = { ...conditions, relations: ['user'] };
+    }
+    return await this.answerRepository.findOne(conditions);
   }
 
   async findAnswerByUserIdAndActivatedDate({
@@ -158,6 +167,20 @@ export class AnswerService {
       answer: { id: answerId },
     });
     await this.answerLikeRepository.save(newAnswerLike);
+    await this.requestPushMessageOnAnswerLike(answerId);
+  }
+
+  private async requestPushMessageOnAnswerLike(
+    answerId: number,
+  ): Promise<void> {
+    const { firebaseToken } = (await this.findAnswerById(answerId, true))?.user;
+    await requestFCM(
+      {
+        title: '새 좋아요',
+        body: '누군가 당신의 답변을 좋아합니다.',
+      },
+      firebaseToken,
+    );
   }
 
   async addAnswerLike({

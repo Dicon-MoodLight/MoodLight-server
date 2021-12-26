@@ -11,7 +11,7 @@ import { UserService } from '../user/user.service';
 import { StatusResponse } from '../types/response';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { SUCCESS_RESPONSE } from '../constants/response';
-import { exceptionHandler } from '../util/error';
+import { exceptionHandler } from '../utils/error';
 import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
 import { Verification } from './entity/verification.entity';
@@ -159,6 +159,13 @@ export class AuthService {
     } catch (err) {
       exceptionHandler(err);
     }
+  }
+
+  async saveFirebaseTokenOfUser(
+    userId: string,
+    firebaseToken: string,
+  ): Promise<void> {
+    await this.userRepository.update(userId, { firebaseToken });
   }
 
   async changePassword({

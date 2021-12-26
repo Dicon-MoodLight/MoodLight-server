@@ -3,14 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 import { Answer } from '../../answer/entity/answer.entity';
 import { Comment } from '../../comment/entity/comment.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { AnswerLike } from '../../answer/entity/answer-like.entity';
 
 @Entity('users')
@@ -49,6 +48,10 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', nullable: false, default: false })
   @ApiProperty({ description: '관리자 여부' })
   is_admin: boolean;
+
+  @Column({ length: 100, nullable: true })
+  @ApiProperty({ description: '파이어베이스 다바이스 토큰' })
+  firebaseToken: string;
 
   @CreateDateColumn({ nullable: false })
   @ApiProperty({ description: '가입일' })

@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { StatusResponse } from '../types/response';
-import { exceptionHandler } from '../util/error';
+import { exceptionHandler } from '../utils/error';
 import { Mood } from './types/question';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { UpdateQuestionDto } from './dto/update-question.dto';

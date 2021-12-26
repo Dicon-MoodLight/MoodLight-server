@@ -27,7 +27,7 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 import { ExistResponse, StatusResponse } from '../types/response';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindListDto } from '../util/dto/find-list.dto';
+import { FindListDto } from '../utils/dto';
 import { ExistResponseDto, StatusResponseDto } from '../constants/response';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { CountOfAnswerResponseDto } from './dto/count-of-answer-response.dto';

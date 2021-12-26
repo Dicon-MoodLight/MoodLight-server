@@ -6,7 +6,7 @@ import { StatusResponse } from '../types/response';
 import { SUCCESS_RESPONSE } from '../constants/response';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Verification } from '../auth/entity/verification.entity';
-import { exceptionHandler } from '../util/error';
+import { exceptionHandler } from '../utils/error';
 
 @Injectable()
 export class UserService {

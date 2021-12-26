@@ -18,9 +18,9 @@ import { JoinDto } from './dto/join.dto';
 import { ConfirmDto } from './dto/confirm.dto';
 import { ConfirmChangePasswordNotLoggedInDto } from './dto/confirm-change-password-not-logged-in.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { LoginDto } from './dto/login.dto';
 import { UserEmailDto } from '../user/dto/user-email.dto';
 import { User } from '../user/entity/user.entity';
+import { SaveFirebaseTokenOfUserDto } from './dto/save-firebase-token-of-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -63,14 +63,18 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '로그인' })
-  @ApiBody({ type: LoginDto })
+  @ApiBody({ type: SaveFirebaseTokenOfUserDto })
   @ApiOkResponse({ description: '{ accessToken: string; }' })
   @ApiUnauthorizedResponse({ type: StatusResponseDto })
   @ApiBearerAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: any): Promise<ILoginResponse> {
+  async login(
+    @Req() req: any,
+    @Body() { firebaseToken }: SaveFirebaseTokenOfUserDto,
+  ): Promise<ILoginResponse> {
     const { id, email } = req.user;
+    await this.authService.saveFirebaseTokenOfUser(id, firebaseToken);
     const accessToken = this.authService.createJwtAccessToken({ id, email });
     return { accessToken };
   }

@@ -24,10 +24,10 @@ import { Comment } from './entity/comment.entity';
 import { StatusResponse } from '../types/response';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { FindListDto } from '../util/dto/find-list.dto';
+import { FindListDto } from '../utils/dto/find-list.dto';
 import { StatusResponseDto } from '../constants/response';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CountDto } from '../util/dto/count.dto';
+import { CountDto } from '../utils/dto/count.dto';
 
 @ApiTags('Comment')
 @Controller('comment')

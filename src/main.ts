@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { promises as fs } from 'fs';
+import { firebaseConfig } from './utils/firebase-config';
 
 const PORT = process.env.PORT || 5000;
 
@@ -39,5 +40,6 @@ const PORT = process.env.PORT || 5000;
   );
   await app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
+    firebaseConfig();
   });
 })();
