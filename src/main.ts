@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule, {
     cors: { origin: true, credentials: true },
   });
+  /*
   const options = new DocumentBuilder()
     .setTitle('Mood light')
     .setDescription('Mood light 서버 API 문서입니다.')
@@ -30,6 +31,10 @@ const PORT = process.env.PORT || 5000;
     .writeFile('./swagger-spec.json', JSON.stringify(document))
     .then((res) => console.log('created swagger file', res))
     .catch((err) => console.log(err));
+  */
+  const document = JSON.parse(
+    (await fs.readFile(`${__dirname}/../swagger-spec.json`)).toString(),
+  );
   SwaggerModule.setup('docs', app, document);
   app.useGlobalPipes(
     new ValidationPipe({
