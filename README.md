@@ -1,20 +1,20 @@
 # Mood Light Server
 
-## 📚 Description
+## Description
 
 Server that supports REST API for the **Mood Light** mobile app.
 
 <br/>
 
-## 🛠️ Installation
+## Installation
 
 ```bash
-$ npm i
+$ npm install
 ```
 
 <br/>
 
-## 🚀 Running the app
+## Running the app
 
 ```bash
 # development
@@ -29,7 +29,7 @@ $ npm run start:prod
 
 <br/>
 
-## 🔑 Admin app
+## Admin app
 
 ```bash
 # development
@@ -41,7 +41,7 @@ $ npm run start:admin:prod
 
 <br/>
 
-## 🔒 Environment configuration
+## Environment configuration
 
 ```bash
 # Environment
@@ -67,7 +67,3 @@ EMAIL_PASSWORD
 JWT_ACCESS_TOKEN_SECRET
 ADMIN_KEY
 ```
-
-<br/><br/>
-
-**Mood Light Server** is made with ❤.
