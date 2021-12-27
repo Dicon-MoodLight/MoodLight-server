@@ -59,6 +59,10 @@ export class User extends BaseEntity {
   @ApiProperty({ description: '관리자 여부' })
   is_admin: boolean;
 
+  @Column({ type: 'boolean', nullable: false, default: true })
+  @ApiProperty({ description: '푸시알림 사용 여부' })
+  usePushMessage: boolean;
+
   @Column({ length: USER_FIREBASE_TOKEN_MAX_LENGTH, nullable: true })
   @ApiProperty({ description: '파이어베이스 다바이스 토큰' })
   firebaseToken: string;

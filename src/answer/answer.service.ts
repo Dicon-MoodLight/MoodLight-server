@@ -23,6 +23,8 @@ import { LIST_PAGINATION_OPTION } from '../utils/list-pagination-option';
 import { QUESTION_ACTIVATED_DATE_FORMAT } from '../constants/format';
 import { DEFAULT_EXCEPTION } from '../constants/exception';
 import { requestFCM } from '../utils/fcm';
+import { messaging } from 'firebase-admin';
+import Message = messaging.Message;
 
 interface IFindAnswers {
   readonly userId: any;
@@ -165,20 +167,22 @@ export class AnswerService {
       answer: { id: answerId },
     });
     await this.answerLikeRepository.save(newAnswerLike);
-    await this.requestPushMessageOnAnswerLike(answerId);
+    await this.requestPushMessage(answerId, {
+      title: '새 좋아요',
+      body: '누군가 당신의 답변을 좋아합니다.',
+    });
   }
 
-  private async requestPushMessageOnAnswerLike(
+  async requestPushMessage(
     answerId: number,
+    notification: Message['notification'],
   ): Promise<void> {
-    const { firebaseToken } = (await this.findAnswerById(answerId, true))?.user;
-    await requestFCM(
-      {
-        title: '새 좋아요',
-        body: '누군가 당신의 답변을 좋아합니다.',
-      },
-      firebaseToken,
-    );
+    const { firebaseToken, usePushMessage } = (
+      await this.findAnswerById(answerId, true)
+    )?.user;
+    if (usePushMessage) {
+      await requestFCM(notification, firebaseToken);
+    }
   }
 
   async addAnswerLike({

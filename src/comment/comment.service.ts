@@ -10,7 +10,6 @@ import { exceptionHandler } from '../utils/error';
 import { IDeleteRequest } from '../types/delete';
 import { Answer } from '../answer/entity/answer.entity';
 import { LIST_PAGINATION_OPTION } from '../utils/list-pagination-option';
-import { requestFCM } from '../utils/fcm';
 
 interface IFindComments {
   readonly answerId: number;
@@ -68,26 +67,14 @@ export class CommentService {
         },
         { countOfComment: answer.countOfComment + 1 },
       );
-      await this.requestPushMessageOnAnswerComment(answerId);
+      await this.answerService.requestPushMessage(answerId, {
+        title: '새 댓글',
+        body: '누군가 당신의 답변에 댓글을 달았습니다.',
+      });
     } catch (err) {
       exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
-  }
-
-  private async requestPushMessageOnAnswerComment(
-    answerId: number,
-  ): Promise<void> {
-    const { firebaseToken } = (
-      await this.answerService.findAnswerById(answerId, true)
-    )?.user;
-    await requestFCM(
-      {
-        title: '새 댓글',
-        body: '누군가 당신의 답변에 댓글을 달았습니다.',
-      },
-      firebaseToken,
-    );
   }
 
   async updateComment({
