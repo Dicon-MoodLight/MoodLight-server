@@ -10,6 +10,9 @@ import { exceptionHandler } from '../utils/error';
 import { IDeleteRequest } from '../types/delete';
 import { Answer } from '../answer/entity/answer.entity';
 import { LIST_PAGINATION_OPTION } from '../utils/list-pagination-option';
+import { requestFCM } from '../utils/fcm';
+import { messaging } from 'firebase-admin';
+import Message = messaging.Message;
 
 interface IFindComments {
   readonly answerId: number;
@@ -67,7 +70,7 @@ export class CommentService {
         },
         { countOfComment: answer.countOfComment + 1 },
       );
-      await this.answerService.requestPushMessage(answerId, {
+      await this.requestPushMessageOnComment(answerId, {
         title: '새 댓글',
         body: '누군가 당신의 답변에 댓글을 달았습니다.',
       });
@@ -75,6 +78,18 @@ export class CommentService {
       exceptionHandler(err);
     }
     return SUCCESS_RESPONSE;
+  }
+
+  async requestPushMessageOnComment(
+    answerId: number,
+    notification: Message['notification'],
+  ): Promise<void> {
+    const { firebaseToken, usePushMessageOnComment } = (
+      await this.answerService.findAnswerById(answerId, true)
+    )?.user;
+    if (usePushMessageOnComment) {
+      await requestFCM(notification, firebaseToken);
+    }
   }
 
   async updateComment({

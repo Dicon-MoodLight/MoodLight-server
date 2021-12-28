@@ -60,8 +60,12 @@ export class User extends BaseEntity {
   is_admin: boolean;
 
   @Column({ type: 'boolean', nullable: false, default: true })
-  @ApiProperty({ description: '푸시알림 사용 여부' })
-  usePushMessage: boolean;
+  @ApiProperty({ description: '푸시알림 여부: 댓글' })
+  usePushMessageOnComment: boolean;
+
+  @Column({ type: 'boolean', nullable: false, default: true })
+  @ApiProperty({ description: '푸시알림 여부: 좋아요' })
+  usePushMessageOnLike: boolean;
 
   @Column({ length: USER_FIREBASE_TOKEN_MAX_LENGTH, nullable: true })
   @ApiProperty({ description: '파이어베이스 다바이스 토큰' })

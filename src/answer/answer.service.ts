@@ -167,20 +167,20 @@ export class AnswerService {
       answer: { id: answerId },
     });
     await this.answerLikeRepository.save(newAnswerLike);
-    await this.requestPushMessage(answerId, {
+    await this.requestPushMessageOnLike(answerId, {
       title: '새 좋아요',
       body: '누군가 당신의 답변을 좋아합니다.',
     });
   }
 
-  async requestPushMessage(
+  async requestPushMessageOnLike(
     answerId: number,
     notification: Message['notification'],
   ): Promise<void> {
-    const { firebaseToken, usePushMessage } = (
+    const { firebaseToken, usePushMessageOnLike } = (
       await this.findAnswerById(answerId, true)
     )?.user;
-    if (usePushMessage) {
+    if (usePushMessageOnLike) {
       await requestFCM(notification, firebaseToken);
     }
   }
