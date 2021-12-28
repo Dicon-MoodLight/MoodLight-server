@@ -12,25 +12,20 @@ import {
 import { User } from '../../user/entity/user.entity';
 import { Question } from '../../question/entity/question.entity';
 import { Comment } from '../../comment/entity/comment.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { AnswerLike } from './answer-like.entity';
 
 @Entity('answers')
 export class Answer extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
-  @ApiProperty({ description: '답변 아이디' })
   id: number;
 
   @Column({ type: 'text', nullable: false })
-  @ApiProperty({ description: '답변 텍스트' })
   contents: string;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  @ApiProperty({ description: '비공개 여부' })
   private: boolean;
 
   @Column({ name: 'mood_level', type: 'int', nullable: false })
-  @ApiProperty({ description: '감정 수치' })
   moodLevel: number;
 
   @ManyToOne(() => User, (user: User) => user.answers, {
@@ -51,10 +46,8 @@ export class Answer extends BaseEntity {
   comments: Comment[];
 
   @Column({ type: 'int', nullable: false, default: 0 })
-  @ApiProperty({ description: '댓글 갯수' })
   countOfComment: number;
 
-  @ApiProperty({ description: '좋아요 갯수' })
   @Column({ type: 'int', nullable: false, default: 0 })
   likes: number;
 
@@ -64,7 +57,6 @@ export class Answer extends BaseEntity {
   answerLikes: AnswerLike[];
 
   @CreateDateColumn({ name: 'created_date', nullable: false })
-  @ApiProperty({ description: '생성일' })
   createdDate: Date;
 
   @UpdateDateColumn({ name: 'updated_date', nullable: false, select: false })

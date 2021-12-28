@@ -8,26 +8,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Answer } from '../../answer/entity/answer.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { Mood } from '../types/question';
 import { QUESTION_CONTENTS_MAX_LENGTH } from '../../constants/length';
 
 @Entity('questions')
 export class Question extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @ApiProperty({ description: '질문 아이디' })
   id: string;
 
   @Column({ length: 5, nullable: false })
-  @ApiProperty({ description: '기분' })
   mood: Mood;
 
   @Column({ length: QUESTION_CONTENTS_MAX_LENGTH, nullable: false })
-  @ApiProperty({ description: '질문 텍스트' })
   contents: string;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  @ApiProperty({ description: '오늘의 질문 채택 여부' })
   activated: boolean;
 
   @Column({
@@ -35,7 +30,6 @@ export class Question extends BaseEntity {
     length: 10,
     nullable: false,
   })
-  @ApiProperty({ description: '오늘의 질문 채택 날짜' })
   activatedDate: string;
 
   @OneToMany(() => Answer, (answer: Answer) => answer.question, {

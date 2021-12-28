@@ -11,30 +11,17 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { Comment } from './entity/comment.entity';
 import { StatusResponse } from '../types/response';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateCommentDto, UpdateCommentDto } from './dto';
 import { FindListDto, CountDto } from '../utils/dto';
-import { StatusResponseDto } from '../constants/response';
 
-@ApiTags('Comment')
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @ApiOperation({ summary: '댓글 리스트 가져오기 (최신순)' })
-  @ApiResponse({ status: 200, type: Comment, isArray: true })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':answerId')
   async findComments(
@@ -51,7 +38,6 @@ export class CommentController {
     });
   }
 
-  @ApiOperation({ summary: '댓글 갯수 가져오기' })
   @Get('count/:answerId')
   async getCount(
     @Param('answerId', ParseIntPipe) answerId: number,
@@ -60,10 +46,6 @@ export class CommentController {
     return { count };
   }
 
-  @ApiOperation({ summary: '댓글 생성하기' })
-  @ApiBody({ type: CreateCommentDto })
-  @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   async createComment(
@@ -77,10 +59,6 @@ export class CommentController {
     });
   }
 
-  @ApiOperation({ summary: '댓글 수정하기' })
-  @ApiCreatedResponse({ status: 201, type: StatusResponseDto })
-  @ApiBody({ type: UpdateCommentDto })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateComment(
@@ -94,8 +72,6 @@ export class CommentController {
     });
   }
 
-  @ApiOperation({ summary: '댓글 삭제하기' })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteComment(

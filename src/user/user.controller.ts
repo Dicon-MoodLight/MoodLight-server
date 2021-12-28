@@ -10,29 +10,18 @@ import {
   Req,
   ConflictException,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { User } from './entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ExistResponse, StatusResponse } from '../types/response';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { StatusResponseDto } from '../constants/response';
 import { UserIdDto } from './dto/user-id.dto';
 import { GetUserIsExistDto } from './dto/get-user-is-exist.dto';
 
-@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: '사용자 이메일 or 닉네임 가입 여부 확인' })
-  @ApiResponse({ status: 200, description: 'exist: boolean;' })
   @Get('exist')
   async getUserIsExist(
     @Query() { email, nickname }: GetUserIsExistDto,
@@ -49,17 +38,11 @@ export class UserController {
     return { exist };
   }
 
-  @ApiOperation({ summary: '다른 사용자 정보 가져오기' })
-  @ApiResponse({ status: 200, type: User })
   @Get(':userId')
   async findUserById(@Param() { userId }: UserIdDto): Promise<User> {
     return await this.userService.findUserById(userId);
   }
 
-  @ApiOperation({ summary: '사용자 정보 업데이트' })
-  @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ type: StatusResponseDto })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateUser(
@@ -68,9 +51,6 @@ export class UserController {
     return await this.userService.updateUser(updateUserDto);
   }
 
-  @ApiOperation({ summary: '사용자 탈퇴' })
-  @ApiResponse({ type: StatusResponseDto })
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteUser(@Req() req: any): Promise<StatusResponse> {

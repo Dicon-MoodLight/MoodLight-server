@@ -6,6 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import {
+  USER_EMAIL_MAX_LENGTH,
+  USER_NICKNAME_MAX_LENGTH,
+} from '../../constants/length';
 
 type IVerificationMode = 'join' | 'change_password';
 
@@ -14,10 +18,20 @@ export class Verification extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 320, nullable: false, unique: true, select: true })
+  @Column({
+    length: USER_EMAIL_MAX_LENGTH,
+    nullable: false,
+    unique: true,
+    select: true,
+  })
   email: string;
 
-  @Column({ length: 13, nullable: true, unique: true, select: true })
+  @Column({
+    length: USER_NICKNAME_MAX_LENGTH,
+    nullable: true,
+    unique: true,
+    select: true,
+  })
   nickname: string;
 
   @Column({ type: 'text', nullable: true, select: true })

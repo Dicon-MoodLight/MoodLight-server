@@ -10,20 +10,17 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Answer } from '../../answer/entity/answer.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { COMMENT_CONTENTS_MAX_LENGTH } from '../../constants/length';
 
 @Entity('comments')
 export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
-  @ApiProperty({ description: '댓글 아이디' })
   id: number;
 
   @Column({
     length: COMMENT_CONTENTS_MAX_LENGTH,
     nullable: false,
   })
-  @ApiProperty({ description: '댓글 텍스트' })
   contents: string;
 
   @ManyToOne(() => Answer, (answer: Answer) => answer.comments, {
@@ -38,7 +35,6 @@ export class Comment extends BaseEntity {
   user: User;
 
   @CreateDateColumn({ nullable: false, select: false })
-  @ApiProperty({ description: '작성일' })
   created_date: Date;
 
   @UpdateDateColumn({ nullable: false, select: false })
